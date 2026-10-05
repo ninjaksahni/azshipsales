@@ -94,7 +94,7 @@ def _india_bubble_map(df: pd.DataFrame, sku: str, metric: Metric) -> Any:
         autosize=True,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
-        map=dict(padding=dict(l=0, r=0, t=0, b=0)),
+        map=dict(domain=dict(x=[0.0, 1.0], y=[0.0, 1.0])),
     )
     return fig
 
