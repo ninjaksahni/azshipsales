@@ -7,8 +7,9 @@ import plotly.express as px
 import streamlit as st
 
 from src.city_coords import city_coordinates, normalize_city_name
-from src.constants import SESSION_SKU
-from src.fulfillment import Metric, default_sku, skus_sorted
+from src.constants import SESSION_MAP_SKU
+from src.fulfillment import Metric
+from src.sku_selection import ensure_default_sku, ensure_map_sku
 
 
 def _sku_city_map_df(sku_data: dict[str, Any], metric: Metric) -> tuple[pd.DataFrame, list[str]]:
@@ -67,7 +68,7 @@ def _india_bubble_map(df: pd.DataFrame, sku: str, metric: Metric) -> Any:
         lat="lat",
         lon="lon",
         size=value_col,
-        size_max=55,
+        size_max=70,
         hover_name="City",
         custom_data=["metric_label", "hover_value"],
         scope="asia",
@@ -88,18 +89,18 @@ def _india_bubble_map(df: pd.DataFrame, sku: str, metric: Metric) -> Any:
         landcolor="#f5f5f5",
         showocean=True,
         oceancolor="#e8f4fc",
-        lataxis_range=[6, 37],
-        lonaxis_range=[68, 98],
-        center=dict(lat=22.5, lon=82.0),
-        projection_scale=3.8,
+        lataxis_range=[6.5, 37.5],
+        lonaxis_range=[67.5, 97.5],
+        center=dict(lat=22.8, lon=82.5),
+        projection_scale=2.65,
     )
 
     metric_word = "units shipped" if metric == "units" else "revenue (INR)"
     fig.update_layout(
         title=dict(text=f"{sku} — demand across India ({metric_word})", x=0.01, font_size=14),
-        margin=dict(l=0, r=0, t=40, b=0),
+        margin=dict(l=0, r=0, t=44, b=0),
         coloraxis_showscale=False,
-        height=520,
+        height=720,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
     )
@@ -110,22 +111,18 @@ def render_maps_tab(skus: dict[str, Any], metric: Metric) -> None:
     st.markdown("##### Map — where this SKU ships")
     st.caption("Bubble size shows demand in each city. Larger bubble = more shipments for the selected SKU.")
 
-    sku_list = skus_sorted(skus, metric)
-    fallback = default_sku(skus, metric) or sku_list[0]
-    if SESSION_SKU not in st.session_state or st.session_state[SESSION_SKU] not in sku_list:
-        st.session_state[SESSION_SKU] = fallback
+    sku_list = ensure_default_sku(skus, metric)
+    ensure_map_sku(skus, metric)
 
     sku_choice = st.pills(
         "Product (SKU)",
         options=sku_list,
         selection_mode="single",
-        key="map_sku_pills",
+        key=SESSION_MAP_SKU,
         label_visibility="collapsed",
     )
     if not sku_choice:
-        sku_choice = st.session_state.get(SESSION_SKU) or fallback
-    else:
-        st.session_state[SESSION_SKU] = sku_choice
+        sku_choice = st.session_state[SESSION_MAP_SKU]
 
     rec = skus[sku_choice]
     df, missing = _sku_city_map_df(rec, metric)

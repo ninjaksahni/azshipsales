@@ -19,7 +19,6 @@ from src.fulfillment import (
     chart_series_from_table,
     cities_sorted,
     default_city,
-    default_sku,
     filter_cities,
     format_hero_city_to_sku,
     format_hero_sku_to_city,
@@ -31,6 +30,7 @@ from src.fulfillment import (
     store_summary,
 )
 from src.session_prefs import get_metric
+from src.sku_selection import ensure_default_sku
 from src.store_cache import store_to_json_bytes
 from src.ui_maps import render_maps_tab
 from src.ui_momentum import render_market_momentum
@@ -80,6 +80,7 @@ def render_main(store: dict[str, Any], data_path: Path) -> None:
         help="Units = best for fulfillment planning. Revenue = product amount in INR.",
     )
     metric: Metric = get_metric()
+    ensure_default_sku(skus, metric)
 
     tab_sku, tab_city, tab_maps = st.tabs(
         ["SKU → markets", "City → assortment", "Maps"]
@@ -108,10 +109,7 @@ def _render_sku_tab(skus: dict[str, Any], metric: Metric, store: dict[str, Any])
         column_config=_metric_column_config(metric),
     )
 
-    sku_list = skus_sorted(skus, metric)
-    fallback = default_sku(skus, metric) or sku_list[0]
-    if SESSION_SKU not in st.session_state or st.session_state[SESSION_SKU] not in sku_list:
-        st.session_state[SESSION_SKU] = fallback
+    sku_list = ensure_default_sku(skus, metric)
 
     st.markdown("##### Choose SKU")
     sku_choice = st.pills(
