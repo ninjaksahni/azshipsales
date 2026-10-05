@@ -66,7 +66,7 @@ def _india_bubble_map(df: pd.DataFrame, sku: str, metric: Metric) -> Any:
         lat="lat",
         lon="lon",
         size=value_col,
-        size_max=70,
+        size_max=85,
         hover_name="City",
         custom_data=["sku_label", "share_label"],
         scope="asia",
@@ -92,18 +92,19 @@ def _india_bubble_map(df: pd.DataFrame, sku: str, metric: Metric) -> Any:
         landcolor="#f5f5f5",
         showocean=True,
         oceancolor="#e8f4fc",
-        lataxis_range=[6.5, 37.5],
-        lonaxis_range=[67.5, 97.5],
+        lataxis_range=[7.0, 36.5],
+        lonaxis_range=[67.0, 98.0],
         center=dict(lat=22.8, lon=82.5),
-        projection_scale=2.65,
+        projection_scale=2.45,
     )
 
     metric_word = "units shipped" if metric == "units" else "revenue (INR)"
     fig.update_layout(
         title=dict(text=f"{sku} — demand across India ({metric_word})", x=0.01, font_size=14),
-        margin=dict(l=0, r=0, t=44, b=0),
+        margin=dict(l=0, r=0, t=40, b=0),
         coloraxis_showscale=False,
-        height=720,
+        height=960,
+        autosize=True,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
     )
@@ -134,7 +135,11 @@ def render_maps_tab(skus: dict[str, Any], metric: Metric) -> None:
         st.warning("No mappable cities for this SKU yet.")
         return
 
-    st.plotly_chart(_india_bubble_map(df, sku_choice, metric), use_container_width=True)
+    st.plotly_chart(
+        _india_bubble_map(df, sku_choice, metric),
+        use_container_width=True,
+        config={"displayModeBar": False, "responsive": True},
+    )
 
     if missing:
         with st.expander(f"Cities not on map ({len(missing)})"):
