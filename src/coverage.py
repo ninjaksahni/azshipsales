@@ -129,7 +129,7 @@ def coverage_calendar_html(sales_by_day: dict[str, int]) -> str:
       padding: 1px 0;
     }
     .cov-cell { aspect-ratio: 1; border-radius: 2px; min-height: 14px; }
-    .cov-empty { background: rgba(128, 132, 149, 0.22); }
+    .cov-empty { background: #FFFFFF !important; }
     .cov-pad { background: transparent; }
     html[data-theme="dark"] .cov-wrap {
       color: rgba(250, 250, 250, 0.95);
@@ -137,9 +137,6 @@ def coverage_calendar_html(sales_by_day: dict[str, int]) -> str:
     html[data-theme="dark"] .cov-dow {
       color: rgba(250, 250, 250, 0.55);
       opacity: 1;
-    }
-    html[data-theme="dark"] .cov-empty {
-      background: rgba(255, 255, 255, 0.14);
     }
     </style>
     """
@@ -171,7 +168,9 @@ def _month_grid_html(
                     f'<div class="cov-cell" style="background:{color}" title="{tip}"></div>'
                 )
             else:
-                cells.append('<div class="cov-cell cov-empty"></div>')
+                cells.append(
+                    '<div class="cov-cell cov-empty" style="background:#FFFFFF;"></div>'
+                )
 
     return (
         f'<div class="cov-month">'
