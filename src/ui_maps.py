@@ -16,7 +16,11 @@ from src.geocode import (
 )
 from src.constants import SESSION_MAP_SKU
 from src.fulfillment import Metric
-from src.map_selection import selected_cities_from_plotly_state, summarize_area_selection
+from src.map_selection import (
+    plotly_selection_dict,
+    selected_cities_from_plotly_state,
+    summarize_area_selection,
+)
 from src.sku_selection import ensure_default_sku, ensure_map_sku
 
 
@@ -177,6 +181,12 @@ def render_maps_tab(skus: dict[str, Any], metric: Metric) -> None:
         st.warning("No mappable cities for this SKU yet.")
         return
 
+    chart_key = f"india_map_select_{sku_choice}"
+    selection_dict = plotly_selection_dict(st.session_state.get(chart_key))
+    selected_df = selected_cities_from_plotly_state(df, selection_dict)
+    summary = summarize_area_selection(selected_df, sku_choice, sku_total_units)
+    _render_selection_panel(summary)
+
     st.markdown(
         """
         <style>
@@ -191,8 +201,7 @@ def render_maps_tab(skus: dict[str, Any], metric: Metric) -> None:
         unsafe_allow_html=True,
     )
 
-    chart_key = f"india_map_select_{sku_choice}"
-    plotly_state = st.plotly_chart(
+    st.plotly_chart(
         _india_bubble_map(df, sku_choice, metric),
         use_container_width=True,
         on_select="rerun",
@@ -211,16 +220,6 @@ def render_maps_tab(skus: dict[str, Any], metric: Metric) -> None:
             "responsive": True,
         },
     )
-
-    selection_dict: dict[str, Any] | None = None
-    if plotly_state is not None and hasattr(plotly_state, "selection"):
-        selection_dict = plotly_state.selection
-    elif plotly_state is not None and isinstance(plotly_state, dict):
-        selection_dict = plotly_state.get("selection")
-
-    selected_df = selected_cities_from_plotly_state(df, selection_dict)
-    summary = summarize_area_selection(selected_df, sku_choice, sku_total_units)
-    _render_selection_panel(summary)
 
     if missing:
         with st.expander(f"Cities not on map ({len(missing)})"):

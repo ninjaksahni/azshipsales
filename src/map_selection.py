@@ -5,6 +5,18 @@ from typing import Any
 import pandas as pd
 
 
+def plotly_selection_dict(plotly_state: Any) -> dict[str, Any] | None:
+    if plotly_state is None:
+        return None
+    if hasattr(plotly_state, "selection"):
+        sel = plotly_state.selection
+        return sel if isinstance(sel, dict) else None
+    if isinstance(plotly_state, dict):
+        sel = plotly_state.get("selection")
+        return sel if isinstance(sel, dict) else None
+    return None
+
+
 def selected_cities_from_plotly_state(
     map_df: pd.DataFrame,
     selection: dict[str, Any] | None,
