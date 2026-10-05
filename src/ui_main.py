@@ -32,6 +32,7 @@ from src.fulfillment import (
 )
 from src.session_prefs import get_metric
 from src.store_cache import store_to_json_bytes
+from src.ui_maps import render_maps_tab
 from src.ui_momentum import render_market_momentum
 
 
@@ -80,13 +81,18 @@ def render_main(store: dict[str, Any], data_path: Path) -> None:
     )
     metric: Metric = get_metric()
 
-    tab_sku, tab_city = st.tabs(["SKU → markets", "City → assortment"])
+    tab_sku, tab_city, tab_maps = st.tabs(
+        ["SKU → markets", "City → assortment", "Maps"]
+    )
 
     with tab_sku:
         _render_sku_tab(skus, metric, store)
 
     with tab_city:
         _render_city_tab(skus, metric)
+
+    with tab_maps:
+        render_maps_tab(skus, metric)
 
     with st.expander("Settings & export"):
         _render_settings(store, data_path)
