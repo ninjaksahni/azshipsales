@@ -61,7 +61,7 @@ def _india_bubble_map(df: pd.DataFrame, sku: str, metric: Metric) -> Any:
     plot_df["sku_label"] = sku
     plot_df["share_label"] = plot_df["share_pct"].apply(lambda p: f"{p:g}%")
 
-    fig = px.scatter_geo(
+    fig = px.scatter_map(
         plot_df,
         lat="lat",
         lon="lon",
@@ -69,9 +69,12 @@ def _india_bubble_map(df: pd.DataFrame, sku: str, metric: Metric) -> Any:
         size_max=85,
         hover_name="City",
         custom_data=["sku_label", "share_label"],
-        scope="asia",
         color=value_col,
         color_continuous_scale=["#FFE5E5", "#7F1111"],
+        zoom=3.85,
+        center={"lat": 22.8, "lon": 82.5},
+        map_style="carto-positron",
+        height=960,
     )
 
     fig.update_traces(
@@ -83,30 +86,15 @@ def _india_bubble_map(df: pd.DataFrame, sku: str, metric: Metric) -> Any:
         ),
     )
 
-    fig.update_geos(
-        visible=True,
-        resolution=50,
-        showcountries=True,
-        countrycolor="#9aa0a6",
-        showland=True,
-        landcolor="#f5f5f5",
-        showocean=True,
-        oceancolor="#e8f4fc",
-        lataxis_range=[7.0, 36.5],
-        lonaxis_range=[67.0, 98.0],
-        center=dict(lat=22.8, lon=82.5),
-        projection_scale=2.45,
-    )
-
     metric_word = "units shipped" if metric == "units" else "revenue (INR)"
     fig.update_layout(
         title=dict(text=f"{sku} — demand across India ({metric_word})", x=0.01, font_size=14),
-        margin=dict(l=0, r=0, t=40, b=0),
+        margin=dict(l=0, r=0, t=44, b=0, pad=0),
         coloraxis_showscale=False,
-        height=960,
         autosize=True,
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
+        map=dict(padding=dict(l=0, r=0, t=0, b=0)),
     )
     return fig
 
@@ -134,6 +122,20 @@ def render_maps_tab(skus: dict[str, Any], metric: Metric) -> None:
     if df.empty:
         st.warning("No mappable cities for this SKU yet.")
         return
+
+    st.markdown(
+        """
+        <style>
+        div[data-testid="stPlotlyChart"] {
+            width: 100% !important;
+        }
+        div[data-testid="stPlotlyChart"] > div {
+            width: 100% !important;
+        }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
     st.plotly_chart(
         _india_bubble_map(df, sku_choice, metric),
