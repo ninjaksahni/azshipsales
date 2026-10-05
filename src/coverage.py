@@ -75,6 +75,34 @@ def _parse_day(day_str: str) -> date | None:
         return None
 
 
+def _heat_color(count: int, max_count: int) -> str:
+    """Light block for few shipments → dark block for many."""
+    if count <= 0 or max_count <= 0:
+        return "#FFFFFF"
+    t = min(1.0, count / max_count)
+    # Light rose → deep crimson
+    light = (255, 229, 229)
+    dark = (127, 17, 17)
+    r = int(light[0] + (dark[0] - light[0]) * t)
+    g = int(light[1] + (dark[1] - light[1]) * t)
+    b = int(light[2] + (dark[2] - light[2]) * t)
+    return f"rgb({r},{g},{b})"
+
+
+def _format_tooltip(day: date, count: int, max_count: int) -> str:
+    weekday = day.strftime("%A")
+    long_date = f"{day.day} {day.strftime('%B %Y')}"
+    share = (count / max_count * 100) if max_count > 0 else 0
+    lines = [
+        f"{weekday}, {long_date}",
+        f"{count} shipment{'s' if count != 1 else ''}",
+        f"{share:.0f}% of your busiest day",
+    ]
+    if count == max_count:
+        lines.append("Peak day in view")
+    return "<br/>".join(escape(line) for line in lines)
+
+
 def _month_labels(sorted_days: list[str]) -> list[str]:
     seen: list[str] = []
     for day_str in sorted_days:
@@ -128,9 +156,55 @@ def coverage_calendar_html(sales_by_day: dict[str, int]) -> str:
       font-size: 9px;
       padding: 1px 0;
     }
-    .cov-cell { aspect-ratio: 1; border-radius: 2px; min-height: 14px; }
+    .cov-cell {
+      aspect-ratio: 1;
+      border-radius: 3px;
+      min-height: 14px;
+      position: relative;
+      border: 1px solid rgba(128, 128, 128, 0.15);
+    }
+    .cov-cell.cov-hot { cursor: help; }
     .cov-empty { background: #FFFFFF !important; }
-    .cov-pad { background: transparent; }
+    .cov-pad { background: transparent; border: none; }
+    .cov-tip {
+      visibility: hidden;
+      opacity: 0;
+      position: absolute;
+      left: 50%;
+      bottom: calc(100% + 6px);
+      transform: translateX(-50%);
+      background: rgba(20, 20, 24, 0.96);
+      color: #fafafa;
+      padding: 8px 10px;
+      border-radius: 6px;
+      font-size: 10px;
+      line-height: 1.45;
+      text-align: center;
+      white-space: nowrap;
+      z-index: 9999;
+      pointer-events: none;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
+    }
+    .cov-cell.cov-hot:hover .cov-tip,
+    .cov-cell.cov-hot:focus-within .cov-tip {
+      visibility: visible;
+      opacity: 1;
+    }
+    .cov-legend {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 9px;
+      margin-top: 6px;
+      opacity: 0.85;
+    }
+    .cov-legend-bar {
+      flex: 1;
+      height: 8px;
+      border-radius: 4px;
+      background: linear-gradient(90deg, #FFE5E5 0%, #7F1111 100%);
+      border: 1px solid rgba(128, 128, 128, 0.2);
+    }
     html[data-theme="dark"] .cov-wrap {
       color: rgba(250, 250, 250, 0.95);
     }
@@ -140,7 +214,14 @@ def coverage_calendar_html(sales_by_day: dict[str, int]) -> str:
     }
     </style>
     """
-    return style + '<div class="cov-wrap">' + "".join(blocks) + "</div>"
+    legend = (
+        '<div class="cov-legend">'
+        '<span>Fewer</span>'
+        '<div class="cov-legend-bar"></div>'
+        '<span>More</span>'
+        "</div>"
+    )
+    return style + '<div class="cov-wrap">' + "".join(blocks) + legend + "</div>"
 
 
 def _month_grid_html(
@@ -161,11 +242,13 @@ def _month_grid_html(
             key = date(year, month, day).isoformat()
             count = sales_by_day.get(key, 0)
             if count:
-                intensity = 0.35 + 0.65 * (count / max_count)
-                color = f"rgba(255, 75, 75, {intensity:.2f})"
-                tip = escape(f"{key}: {count} shipment{'s' if count != 1 else ''}")
+                day_date = date(year, month, day)
+                color = _heat_color(count, max_count)
+                tip_html = _format_tooltip(day_date, count, max_count)
                 cells.append(
-                    f'<div class="cov-cell" style="background:{color}" title="{tip}"></div>'
+                    f'<div class="cov-cell cov-hot" style="background:{color};" '
+                    f'aria-label="{escape(key)}: {count} shipments">'
+                    f'<span class="cov-tip">{tip_html}</span></div>'
                 )
             else:
                 cells.append(
