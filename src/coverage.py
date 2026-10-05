@@ -108,14 +108,40 @@ def coverage_calendar_html(sales_by_day: dict[str, int]) -> str:
 
     style = """
     <style>
-    .cov-wrap { font-family: sans-serif; font-size: 11px; margin-bottom: 12px; }
+    .cov-wrap {
+      font-family: sans-serif;
+      font-size: 11px;
+      margin-bottom: 12px;
+      color: var(--text-color, #31333F);
+    }
     .cov-month { margin-bottom: 10px; }
-    .cov-title { font-weight: 600; margin-bottom: 4px; color: #31333F; }
+    .cov-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: var(--text-color, #31333F);
+    }
     .cov-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
-    .cov-dow { text-align: center; color: #808495; font-size: 9px; padding: 1px 0; }
+    .cov-dow {
+      text-align: center;
+      color: var(--text-color, #808495);
+      opacity: 0.72;
+      font-size: 9px;
+      padding: 1px 0;
+    }
     .cov-cell { aspect-ratio: 1; border-radius: 2px; min-height: 14px; }
-    .cov-empty { background: #f0f2f6; }
+    .cov-empty { background: rgba(128, 132, 149, 0.22); }
     .cov-pad { background: transparent; }
+    html[data-theme="dark"] .cov-wrap,
+    html[data-theme="dark"] .cov-title {
+      color: rgba(250, 250, 250, 0.95);
+    }
+    html[data-theme="dark"] .cov-dow {
+      color: rgba(250, 250, 250, 0.55);
+      opacity: 1;
+    }
+    html[data-theme="dark"] .cov-empty {
+      background: rgba(255, 255, 255, 0.14);
+    }
     </style>
     """
     return style + '<div class="cov-wrap">' + "".join(blocks) + "</div>"
