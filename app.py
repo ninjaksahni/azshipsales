@@ -6,6 +6,7 @@ from pathlib import Path
 import pandas as pd
 import streamlit as st
 
+from src.coverage import coverage_calendar_html, coverage_summary_text
 from src.parser import parse_shipment_csv
 from src.store import DEFAULT_DATA_PATH, ingest_rows, load_store, reset_store, save_store
 
@@ -78,16 +79,17 @@ SHIPMENT_REPORT_URL = (
     "https://sellercentral.amazon.in/reportcentral/SHIPMENT_SALES/1"
 )
 
+sidebar_store = load_or_init()
+
 with st.sidebar:
     st.header("Upload CSV")
-    with st.expander("Where to download the file", expanded=True):
+    with st.expander("Where to download the file", expanded=False):
         st.markdown(
             f"""
-1. Sign in to [Amazon Seller Central (India)](https://sellercentral.amazon.in/).
-2. Open the **Shipment Sales** report:  
+1. Open the **Shipment Sales** report:  
    [Report Central → Shipment Sales]({SHIPMENT_REPORT_URL})
-3. Download the report as **CSV** (last 30 days shipment data).
-4. Upload that `.csv` file below.
+2. Download the report as **CSV** (last 30 days shipment data).
+3. Upload that `.csv` file below.
 
 Re-uploading newer exports is fine — overlapping orders are deduplicated automatically.
             """.strip()
@@ -112,6 +114,23 @@ Re-uploading newer exports is fine — overlapping orders are deduplicated autom
             )
         except ValueError as e:
             st.error(str(e))
+        else:
+            sidebar_store = load_or_init()
+
+    st.divider()
+    st.subheader("Sales coverage")
+    sales_by_day = sidebar_store.get("sales_by_day", {})
+    st.markdown(coverage_summary_text(sales_by_day))
+    calendar_html = coverage_calendar_html(sales_by_day)
+    if calendar_html:
+        st.markdown(calendar_html, unsafe_allow_html=True)
+    elif sidebar_store.get("uploads"):
+        st.caption(
+            "Calendar is empty for data imported before this feature. "
+            "Re-upload your CSVs (duplicates are skipped) to backfill dates."
+        )
+    else:
+        st.caption("Days with sales appear highlighted once you upload data.")
 
     st.divider()
     st.header("Data")

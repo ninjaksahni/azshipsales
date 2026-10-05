@@ -6,6 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from src.aggregate import apply_shipment_to_sku, ensure_sku_record, new_store
+from src.coverage import ensure_sales_by_day, record_shipment_day
 from src.parser import ShipmentRow
 
 DEFAULT_DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "aggregates.json"
@@ -22,6 +23,7 @@ def load_store(path: Path = DEFAULT_DATA_PATH) -> dict[str, Any]:
         data["skus"] = {}
     if "uploads" not in data:
         data["uploads"] = []
+    ensure_sales_by_day(data)
     return data
 
 
@@ -58,6 +60,7 @@ def ingest_rows(
             row.quantity,
             row.product_amount,
         )
+        record_shipment_day(store, row.shipment_date)
         processed.add(key)
         imported += 1
 

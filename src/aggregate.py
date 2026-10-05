@@ -72,6 +72,7 @@ def new_store() -> dict[str, Any]:
         "last_updated": None,
         "processed_keys": [],
         "uploads": [],
+        "sales_by_day": {},
         "skus": {},
     }
 

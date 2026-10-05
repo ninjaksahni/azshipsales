@@ -32,6 +32,7 @@ class ShipmentRow:
     product_amount: float
     city: str
     state: str
+    shipment_date: str  # YYYY-MM-DD (local date from Customer Shipment Date)
 
     @property
     def dedup_key(self) -> str:
@@ -84,6 +85,11 @@ def parse_shipment_csv(source: Union[str, bytes, TextIO, BinaryIO]) -> ParseResu
             skipped_zero += 1
             continue
 
+        ts = pd.to_datetime(row["Customer Shipment Date"], errors="coerce")
+        shipment_date = ""
+        if not pd.isna(ts):
+            shipment_date = ts.date().isoformat()
+
         rows.append(
             ShipmentRow(
                 order_id=order_id,
@@ -92,6 +98,7 @@ def parse_shipment_csv(source: Union[str, bytes, TextIO, BinaryIO]) -> ParseResu
                 product_amount=float(amount),
                 city=_normalize_text(row["Shipment To City"]),
                 state=_normalize_text(row["Shipment To State"]),
+                shipment_date=shipment_date,
             )
         )
 
