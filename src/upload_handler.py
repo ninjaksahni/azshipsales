@@ -83,8 +83,11 @@ def handle_csv_upload(uploaded_file: Any, data_path: Path) -> UploadOutcome | No
         f"Skipped {stats['rows_skipped_duplicate']} duplicates · "
         f"Skipped {stats['rows_skipped_zero_amount']} zero-amount/zero-qty"
     )
+    timeline_bf = stats.get("timeline_backfilled", 0)
     if backfill:
         msg += f" · Backfilled {backfill} calendar entries"
+    if timeline_bf:
+        msg += f" · Backfilled {timeline_bf} momentum timelines"
 
     return UploadOutcome(msg, level, stats)
 

@@ -32,6 +32,7 @@ from src.fulfillment import (
 )
 from src.session_prefs import get_metric
 from src.store_cache import store_to_json_bytes
+from src.ui_momentum import render_market_momentum
 
 
 def _metric_column_config(metric: Metric) -> dict[str, Any]:
@@ -82,7 +83,7 @@ def render_main(store: dict[str, Any], data_path: Path) -> None:
     tab_sku, tab_city = st.tabs(["SKU → markets", "City → assortment"])
 
     with tab_sku:
-        _render_sku_tab(skus, metric)
+        _render_sku_tab(skus, metric, store)
 
     with tab_city:
         _render_city_tab(skus, metric)
@@ -91,7 +92,7 @@ def render_main(store: dict[str, Any], data_path: Path) -> None:
         _render_settings(store, data_path)
 
 
-def _render_sku_tab(skus: dict[str, Any], metric: Metric) -> None:
+def _render_sku_tab(skus: dict[str, Any], metric: Metric, store: dict[str, Any]) -> None:
     st.markdown("##### At a glance — where to send each product")
     glance = sku_glance_dataframe(skus, metric)
     st.dataframe(
@@ -155,6 +156,9 @@ def _render_sku_tab(skus: dict[str, Any], metric: Metric) -> None:
             st.bar_chart(series, horizontal=True)
         else:
             st.caption("No chart data.")
+
+    priority_cities = city_df["City"].tolist() if not city_df.empty else []
+    render_market_momentum(sku_choice, rec, store, priority_cities)
 
     with st.expander("By state (secondary)"):
         state_ranked = ranked_places_for_sku(rec, "states", metric, limit=10)

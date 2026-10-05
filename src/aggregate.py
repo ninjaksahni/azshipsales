@@ -4,8 +4,8 @@ from copy import deepcopy
 from typing import Any
 
 
-def _empty_bucket() -> dict[str, float | int]:
-    return {"quantity": 0, "revenue_inr": 0.0}
+def _empty_bucket() -> dict[str, Any]:
+    return {"quantity": 0, "revenue_inr": 0.0, "by_day": {}}
 
 
 def _add_to_bucket(bucket: dict[str, Any], quantity: int, revenue: float) -> None:
@@ -74,6 +74,7 @@ def new_store() -> dict[str, Any]:
         "uploads": [],
         "sales_by_day": {},
         "sales_day_keys": [],
+        "timeline_keys": [],
         "skus": {},
     }
 
