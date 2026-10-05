@@ -15,6 +15,7 @@ from src.sku_selection import ensure_default_sku, ensure_map_sku
 def _sku_city_map_df(sku_data: dict[str, Any], metric: Metric) -> tuple[pd.DataFrame, list[str]]:
     rows: list[dict[str, Any]] = []
     missing: list[str] = []
+    total_units = int(sku_data.get("total_quantity", 0))
 
     for city, bucket in sku_data.get("cities", {}).items():
         if metric == "units":
@@ -34,6 +35,8 @@ def _sku_city_map_df(sku_data: dict[str, Any], metric: Metric) -> tuple[pd.DataF
 
         lat, lon = coords
         display = normalize_city_name(city) if normalize_city_name(city) else city
+        units = int(bucket.get("quantity", 0))
+        share_pct = (units / total_units * 100.0) if total_units > 0 else 0.0
         rows.append(
             {
                 "City": display,
@@ -41,6 +44,7 @@ def _sku_city_map_df(sku_data: dict[str, Any], metric: Metric) -> tuple[pd.DataF
                 "lon": lon,
                 "value": value,
                 "metric_label": value_label,
+                "share_pct": round(share_pct, 1),
             }
         )
 
@@ -50,18 +54,12 @@ def _sku_city_map_df(sku_data: dict[str, Any], metric: Metric) -> tuple[pd.DataF
     return pd.DataFrame(rows), missing
 
 
-def _format_hover_value(metric: Metric, value: float) -> str:
-    if metric == "units":
-        return f"{int(value):,}"
-    return f"₹{value:,.2f}"
-
-
 def _india_bubble_map(df: pd.DataFrame, sku: str, metric: Metric) -> Any:
     value_col = "value"
     plot_df = df.copy()
-    plot_df["hover_value"] = plot_df[value_col].apply(
-        lambda v: _format_hover_value(metric, v)
-    )
+
+    plot_df["sku_label"] = sku
+    plot_df["share_label"] = plot_df["share_pct"].apply(lambda p: f"{p:g}%")
 
     fig = px.scatter_geo(
         plot_df,
@@ -70,14 +68,19 @@ def _india_bubble_map(df: pd.DataFrame, sku: str, metric: Metric) -> Any:
         size=value_col,
         size_max=70,
         hover_name="City",
-        custom_data=["metric_label", "hover_value"],
+        custom_data=["sku_label", "share_label"],
         scope="asia",
         color=value_col,
         color_continuous_scale=["#FFE5E5", "#7F1111"],
     )
 
     fig.update_traces(
-        hovertemplate="<b>%{hovertext}</b><br>%{customdata[0]}: %{customdata[1]}<extra></extra>",
+        hovertemplate=(
+            "<b>%{hovertext}</b><br>"
+            "SKU: %{customdata[0]}<br>"
+            "%{customdata[1]} of this SKU's shipments"
+            "<extra></extra>"
+        ),
     )
 
     fig.update_geos(
