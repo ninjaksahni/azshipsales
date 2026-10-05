@@ -8,9 +8,11 @@ import streamlit as st
 
 from src.city_coords import normalize_city_name
 from src.geocode import (
+    city_geocode_pending,
     collect_city_states,
     ensure_coordinates_for_cities,
     get_city_coordinates,
+    load_geocode_cache,
 )
 from src.constants import SESSION_MAP_SKU
 from src.fulfillment import Metric
@@ -148,13 +150,10 @@ def render_maps_tab(skus: dict[str, Any], metric: Metric) -> None:
         sku_choice = st.session_state[SESSION_MAP_SKU]
 
     city_states = collect_city_states(skus)
-    pending = sum(
-        1
-        for c, st in city_states.items()
-        if get_city_coordinates(c, st, allow_fetch=False) is None
-    )
-    if pending:
-        st.caption(f"Looking up coordinates for **{pending}** new cities (one-time, cached)…")
+    geo_cache = load_geocode_cache()
+    pending_cities = [c for c in city_states if city_geocode_pending(c, geo_cache)]
+    if pending_cities:
+        st.caption(f"Looking up coordinates for **{len(pending_cities)}** new cities (one-time, cached)…")
         progress = st.progress(0.0, text="Geocoding cities in India…")
 
         def _on_progress(done: int, total: int) -> None:

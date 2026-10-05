@@ -151,8 +151,11 @@ def get_city_coordinates(
         cache = load_geocode_cache()
 
     hit = cache.get(key)
-    if isinstance(hit, dict) and "lat" in hit and "lon" in hit:
-        return float(hit["lat"]), float(hit["lon"])
+    if isinstance(hit, dict):
+        if hit.get("failed"):
+            return None
+        if "lat" in hit and "lon" in hit:
+            return float(hit["lat"]), float(hit["lon"])
 
     if not allow_fetch:
         return None
@@ -167,7 +170,30 @@ def get_city_coordinates(
             "state": state,
         }
         save_geocode_cache(cache)
+    else:
+        cache[key] = {
+            "failed": True,
+            "city": city,
+            "state": state,
+        }
+        save_geocode_cache(cache)
     return coords
+
+
+def city_geocode_pending(city: str, cache: dict[str, Any] | None = None) -> bool:
+    """True if this city still needs a one-time geocode attempt."""
+    key = _cache_key(city)
+    if not key or _static_coords(city):
+        return False
+    if cache is None:
+        cache = load_geocode_cache()
+    hit = cache.get(key)
+    if isinstance(hit, dict):
+        if hit.get("failed"):
+            return False
+        if "lat" in hit and "lon" in hit:
+            return False
+    return True
 
 
 def collect_city_states(skus: dict[str, Any]) -> dict[str, str]:
@@ -185,11 +211,7 @@ def ensure_coordinates_for_cities(
     progress: Callable[[int, int], None] | None = None,
 ) -> dict[str, int]:
     cache = load_geocode_cache()
-    missing = [
-        c
-        for c in city_states
-        if get_city_coordinates(c, city_states[c], allow_fetch=False, cache=cache) is None
-    ]
+    missing = [c for c in city_states if city_geocode_pending(c, cache)]
     resolved = 0
     failed = 0
     total = len(missing)
