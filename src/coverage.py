@@ -118,7 +118,7 @@ def coverage_calendar_html(sales_by_day: dict[str, int]) -> str:
     .cov-title {
       font-weight: 600;
       margin-bottom: 4px;
-      color: var(--text-color, #31333F);
+      color: #FFFFFF !important;
     }
     .cov-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
     .cov-dow {
@@ -131,8 +131,7 @@ def coverage_calendar_html(sales_by_day: dict[str, int]) -> str:
     .cov-cell { aspect-ratio: 1; border-radius: 2px; min-height: 14px; }
     .cov-empty { background: rgba(128, 132, 149, 0.22); }
     .cov-pad { background: transparent; }
-    html[data-theme="dark"] .cov-wrap,
-    html[data-theme="dark"] .cov-title {
+    html[data-theme="dark"] .cov-wrap {
       color: rgba(250, 250, 250, 0.95);
     }
     html[data-theme="dark"] .cov-dow {
@@ -176,7 +175,7 @@ def _month_grid_html(
 
     return (
         f'<div class="cov-month">'
-        f'<div class="cov-title">{escape(title)}</div>'
+        f'<div class="cov-title" style="color:#FFFFFF;">{escape(title)}</div>'
         f'<div class="cov-grid">{header}{"".join(cells)}</div>'
         f"</div>"
     )
