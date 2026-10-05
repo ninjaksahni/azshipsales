@@ -14,8 +14,7 @@ from src.store_cache import load_store_snapshot, store_mtime_ns
 from src.ui_main import render_main
 from src.upload_handler import (
     clear_upload_session_keys,
-    format_cached_upload_notice,
-    handle_csv_upload,
+    handle_csv_uploads,
 )
 
 st.set_page_config(
@@ -57,30 +56,41 @@ def render_sidebar() -> None:
 1. Open the **Shipment Sales** report:  
    [Report Central → Shipment Sales]({SHIPMENT_REPORT_URL})
 2. Download the report as **CSV** (last 30 days shipment data).
-3. Upload that `.csv` file below.
+3. Upload one or more `.csv` files below.
 
 Re-uploading newer exports is fine — overlapping orders are deduplicated automatically.
             """.strip()
         )
 
     uploaded = st.file_uploader(
-        "Amazon shipment report",
+        "Amazon shipment reports",
         type=["csv"],
+        accept_multiple_files=True,
         key="shipment_csv_uploader",
     )
-    if uploaded is not None:
-        outcome = handle_csv_upload(uploaded, DATA_PATH)
-        if outcome is None:
-            st.caption(format_cached_upload_notice())
-        elif outcome.level == "error":
-            st.error(outcome.message)
+    if uploaded:
+        results, store_changed = handle_csv_uploads(uploaded, DATA_PATH)
+        if store_changed:
             _invalidate_store_cache()
-        elif outcome.level == "warning":
-            st.warning(outcome.message)
-            _invalidate_store_cache()
-        else:
-            st.success(outcome.message)
-            _invalidate_store_cache()
+
+        imported_total = sum(
+            o.stats.get("rows_imported", 0)
+            for _, o in results
+            if o and o.stats
+        )
+        if len(uploaded) > 1 and imported_total > 0:
+            st.success(f"Finished {len(uploaded)} files — **{imported_total}** new rows imported in total.")
+
+        for filename, outcome in results:
+            if outcome is None:
+                st.caption(f"**{filename}** — already processed this session.")
+            elif outcome.level == "error":
+                st.error(f"**{filename}** — {outcome.message}")
+            elif outcome.level == "warning":
+                st.warning(f"**{filename}** — {outcome.message}")
+            else:
+                st.success(f"**{filename}** — {outcome.message}")
+
         store = _get_store()
 
     st.divider()

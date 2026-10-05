@@ -94,3 +94,22 @@ def handle_csv_upload(uploaded_file: Any, data_path: Path) -> UploadOutcome | No
 
 def format_cached_upload_notice() -> str:
     return "This file was already processed this session."
+
+
+def handle_csv_uploads(
+    uploaded_files: list[Any],
+    data_path: Path,
+) -> tuple[list[tuple[str, UploadOutcome | None]], bool]:
+    """
+    Process multiple CSV uploads in order. Returns (per-file results, store_changed).
+    """
+    results: list[tuple[str, UploadOutcome | None]] = []
+    store_changed = False
+
+    for uploaded_file in uploaded_files:
+        outcome = handle_csv_upload(uploaded_file, data_path)
+        results.append((uploaded_file.name, outcome))
+        if outcome is not None and outcome.level in ("success", "warning"):
+            store_changed = True
+
+    return results, store_changed
