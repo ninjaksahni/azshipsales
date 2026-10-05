@@ -1,6 +1,6 @@
 # azshipsales
 
-Streamlit app to parse Amazon India **last 30 days** customer shipment CSVs, aggregate sales by **Merchant SKU** and destination **city/state**, and persist rolling totals in JSON.
+Streamlit app to see **where to fulfill each SKU** (city/market priority) and **what to stock in each city**, from Amazon India Shipment Sales CSV uploads. Rolling totals persist in JSON.
 
 ## Setup
 

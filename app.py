@@ -7,72 +7,33 @@ import pandas as pd
 import streamlit as st
 
 from src.coverage import coverage_calendar_html, coverage_summary_text
+from src.fulfillment import (
+    Metric,
+    build_city_index,
+    default_city,
+    default_sku,
+    format_hero_city_to_sku,
+    format_hero_sku_to_city,
+    places_table_df,
+    ranked_places_for_sku,
+    ranked_skus_for_city,
+    sku_glance_dataframe,
+)
 from src.parser import parse_shipment_csv
 from src.store import DEFAULT_DATA_PATH, ingest_rows, load_store, reset_store, save_store
 
-st.set_page_config(page_title="Amazon Shipment Analytics", layout="wide")
-st.title("Amazon shipment analytics")
-st.caption("Upload last-30-days shipment CSVs; aggregates SKU sales by city and state.")
+st.set_page_config(page_title="Fulfillment by city & SKU", layout="wide")
+st.title("Where to fulfill")
+st.caption(
+    "See which city sells each SKU most — and what to stock in each city. "
+    "Upload reports from the sidebar."
+)
 
 DATA_PATH = DEFAULT_DATA_PATH
 
 
 def load_or_init() -> dict:
     return load_store(DATA_PATH)
-
-
-def sku_overview_df(store: dict) -> pd.DataFrame:
-    rows = []
-    for sku, data in store.get("skus", {}).items():
-        top_city = data.get("top_city") or {}
-        top_state = data.get("top_state") or {}
-        rows.append(
-            {
-                "SKU": sku,
-                "Total units": int(data.get("total_quantity", 0)),
-                "Total revenue (INR)": float(data.get("total_revenue_inr", 0)),
-                "Top city": top_city.get("name", "—"),
-                "Top city units": top_city.get("quantity", 0),
-                "Top city revenue (INR)": top_city.get("revenue_inr", 0),
-                "Top state": top_state.get("name", "—"),
-                "Top state units": top_state.get("quantity", 0),
-                "Top state revenue (INR)": top_state.get("revenue_inr", 0),
-            }
-        )
-    if not rows:
-        return pd.DataFrame(
-            columns=[
-                "SKU",
-                "Total units",
-                "Total revenue (INR)",
-                "Top city",
-                "Top city units",
-                "Top city revenue (INR)",
-                "Top state",
-                "Top state units",
-                "Top state revenue (INR)",
-            ]
-        )
-    df = pd.DataFrame(rows)
-    return df.sort_values("Total units", ascending=False).reset_index(drop=True)
-
-
-def bucket_to_df(buckets: dict, name_col: str) -> pd.DataFrame:
-    rows = [
-        {
-            name_col: name,
-            "Units": int(v.get("quantity", 0)),
-            "Revenue (INR)": float(v.get("revenue_inr", 0)),
-        }
-        for name, v in buckets.items()
-    ]
-    if not rows:
-        return pd.DataFrame(columns=[name_col, "Units", "Revenue (INR)"])
-    return (
-        pd.DataFrame(rows)
-        .sort_values("Units", ascending=False)
-        .reset_index(drop=True)
-    )
 
 
 SHIPMENT_REPORT_URL = (
@@ -152,57 +113,152 @@ Re-uploading newer exports is fine — overlapping orders are deduplicated autom
 store = load_or_init()
 skus = store.get("skus", {})
 
-total_units = sum(int(s.get("total_quantity", 0)) for s in skus.values())
-total_revenue = sum(float(s.get("total_revenue_inr", 0)) for s in skus.values())
+if not skus:
+    st.info(
+        "No shipment data yet. Use **Upload CSV** in the sidebar to add your "
+        "Amazon Shipment Sales report."
+    )
+    st.stop()
 
-c1, c2, c3, c4 = st.columns(4)
-c1.metric("Total units", f"{total_units:,}")
-c2.metric("Total revenue (INR)", f"{total_revenue:,.2f}")
-c3.metric("SKUs", len(skus))
-c4.metric("Uploads", len(store.get("uploads", [])))
+metric_label = st.radio(
+    "Rank by",
+    options=["Units (for fulfillment)", "Revenue (₹)"],
+    horizontal=True,
+    help="Units = how many items shipped. Revenue = product amount in INR.",
+)
+metric: Metric = "units" if metric_label.startswith("Units") else "revenue"
 
-st.subheader("SKU overview")
-st.dataframe(sku_overview_df(store), use_container_width=True, hide_index=True)
+tab_sku, tab_city = st.tabs(["SKU → markets", "City → assortment"])
 
-if skus:
-    st.subheader("SKU detail")
-    sku_choice = st.selectbox("Select SKU", sorted(skus.keys()))
+with tab_sku:
+    st.markdown("##### At a glance — where to send each product")
+    glance = sku_glance_dataframe(skus, metric)
+    st.dataframe(glance, use_container_width=True, hide_index=True)
+
+    sku_list = sorted(skus.keys(), key=lambda s: -(
+        skus[s]["total_quantity"] if metric == "units" else skus[s]["total_revenue_inr"]
+    ))
+    default = default_sku(skus, metric) or sku_list[0]
+
+    col_pick, col_detail = st.columns([1, 2])
+    with col_pick:
+        st.markdown("##### Choose SKU")
+        sku_choice = st.selectbox(
+            "Product (SKU)",
+            sku_list,
+            index=sku_list.index(default) if default in sku_list else 0,
+            label_visibility="collapsed",
+        )
+
     rec = skus[sku_choice]
-    top_city = rec.get("top_city")
-    top_state = rec.get("top_state")
-    if top_city:
-        st.info(
-            f"**{sku_choice}** sells most to **{top_city['name']}** "
-            f"({top_city['quantity']} units, ₹{top_city['revenue_inr']:,.2f} revenue)."
-        )
-    if top_state:
-        st.write(
-            f"Top state: **{top_state['name']}** "
-            f"({top_state['quantity']} units, ₹{top_state['revenue_inr']:,.2f})."
-        )
+    ranked_cities = ranked_places_for_sku(rec, "cities", metric)
 
-    col_a, col_b = st.columns(2)
-    with col_a:
-        st.markdown("**By city**")
-        city_df = bucket_to_df(rec.get("cities", {}), "City")
+    with col_detail:
+        if ranked_cities:
+            top = ranked_cities[0]
+            st.success(
+                format_hero_sku_to_city(
+                    sku_choice,
+                    top["name"],
+                    top["value"],
+                    top["share_pct"],
+                    metric,
+                )
+            )
+        else:
+            st.warning(f"No city data for **{sku_choice}** yet.")
+
+    st.markdown("##### Priority markets for this SKU")
+    top_n = ranked_places_for_sku(rec, "cities", metric, limit=10)
+    city_df = places_table_df(top_n, metric, "City")
+    chart_col, table_col = st.columns([1, 1])
+    with table_col:
         st.dataframe(city_df, use_container_width=True, hide_index=True)
+    with chart_col:
         if not city_df.empty:
-            st.bar_chart(city_df.set_index("City")["Units"])
-    with col_b:
-        st.markdown("**By state**")
-        state_df = bucket_to_df(rec.get("states", {}), "State")
-        st.dataframe(state_df, use_container_width=True, hide_index=True)
-        if not state_df.empty:
-            st.bar_chart(state_df.set_index("State")["Units"])
+            chart_label = "Units" if metric == "units" else "Revenue (₹)"
+            chart_data = city_df.head(8).set_index("City")[chart_label]
+            st.bar_chart(chart_data, horizontal=True)
 
-if store.get("uploads"):
-    with st.expander("Upload history"):
+    with st.expander("By state (secondary)"):
+        state_ranked = ranked_places_for_sku(rec, "states", metric, limit=10)
+        st.dataframe(
+            places_table_df(state_ranked, metric, "State"),
+            use_container_width=True,
+            hide_index=True,
+        )
+
+with tab_city:
+    city_index = build_city_index(skus)
+    cities = sorted(
+        city_index.keys(),
+        key=lambda c: -(
+            city_index[c]["quantity"]
+            if metric == "units"
+            else city_index[c]["revenue_inr"]
+        ),
+    )
+    default_c = default_city(city_index, metric) or cities[0]
+
+    col_pick, col_detail = st.columns([1, 2])
+    with col_pick:
+        st.markdown("##### Choose city")
+        city_choice = st.selectbox(
+            "City",
+            cities,
+            index=cities.index(default_c) if default_c in cities else 0,
+            label_visibility="collapsed",
+        )
+
+    ranked_skus = ranked_skus_for_city(city_index, city_choice, metric)
+    with col_detail:
+        if ranked_skus:
+            top = ranked_skus[0]
+            st.success(
+                format_hero_city_to_sku(
+                    city_choice,
+                    top["name"],
+                    top["value"],
+                    top["share_pct"],
+                    metric,
+                )
+            )
+        else:
+            st.warning(f"No SKU data for **{city_choice}** yet.")
+
+    st.markdown("##### What to stock in this city")
+    sku_rank_df = places_table_df(
+        ranked_skus_for_city(city_index, city_choice, metric, limit=10),
+        metric,
+        "SKU",
+    )
+    chart_col, table_col = st.columns([1, 1])
+    with table_col:
+        st.dataframe(sku_rank_df, use_container_width=True, hide_index=True)
+    with chart_col:
+        if not sku_rank_df.empty:
+            chart_label = "Units" if metric == "units" else "Revenue (₹)"
+            st.bar_chart(
+                sku_rank_df.head(8).set_index("SKU")[chart_label],
+                horizontal=True,
+            )
+
+with st.expander("Settings & export"):
+    total_units = sum(int(s.get("total_quantity", 0)) for s in skus.values())
+    total_revenue = sum(float(s.get("total_revenue_inr", 0)) for s in skus.values())
+    m1, m2, m3 = st.columns(3)
+    m1.metric("Total units (all SKUs)", f"{total_units:,}")
+    m2.metric("Total revenue (INR)", f"{total_revenue:,.2f}")
+    m3.metric("Data uploads", len(store.get("uploads", [])))
+
+    if store.get("uploads"):
+        st.markdown("**Upload history**")
         st.dataframe(pd.DataFrame(store["uploads"]), use_container_width=True, hide_index=True)
 
-if DATA_PATH.exists():
-    st.download_button(
-        "Download aggregates.json",
-        data=json.dumps(store, indent=2, ensure_ascii=False),
-        file_name="aggregates.json",
-        mime="application/json",
-    )
+    if DATA_PATH.exists():
+        st.download_button(
+            "Download aggregates.json",
+            data=json.dumps(store, indent=2, ensure_ascii=False),
+            file_name="aggregates.json",
+            mime="application/json",
+        )
