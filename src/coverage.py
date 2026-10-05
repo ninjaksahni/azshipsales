@@ -5,6 +5,8 @@ from datetime import date, datetime
 from html import escape
 from typing import Any
 
+from src.parser import ShipmentRow
+
 
 def ensure_sales_by_day(store: dict[str, Any]) -> dict[str, int]:
     days = store.get("sales_by_day")
@@ -14,11 +16,31 @@ def ensure_sales_by_day(store: dict[str, Any]) -> dict[str, int]:
     return days
 
 
-def record_shipment_day(store: dict[str, Any], shipment_date: str) -> None:
-    if not shipment_date:
-        return
+def ensure_sales_day_keys(store: dict[str, Any]) -> set[str]:
+    keys = store.get("sales_day_keys")
+    if not isinstance(keys, list):
+        keys = []
+        store["sales_day_keys"] = keys
+    return set(keys)
+
+
+def _day_row_key(row: ShipmentRow) -> str:
+    return f"{row.dedup_key}|{row.shipment_date}"
+
+
+def record_shipment_day_for_row(store: dict[str, Any], row: ShipmentRow) -> bool:
+    """Record one shipment toward sales_by_day; idempotent per order+SKU+date."""
+    if not row.shipment_date:
+        return False
+    day_keys = ensure_sales_day_keys(store)
+    composite = _day_row_key(row)
+    if composite in day_keys:
+        return False
     days = ensure_sales_by_day(store)
-    days[shipment_date] = int(days.get(shipment_date, 0)) + 1
+    days[row.shipment_date] = int(days.get(row.shipment_date, 0)) + 1
+    day_keys.add(composite)
+    store["sales_day_keys"] = sorted(day_keys)
+    return True
 
 
 def coverage_summary_text(sales_by_day: dict[str, int]) -> str:

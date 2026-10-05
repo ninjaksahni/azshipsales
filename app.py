@@ -107,11 +107,15 @@ Re-uploading newer exports is fine — overlapping orders are deduplicated autom
                 parsed.rows_skipped_zero_amount,
             )
             save_store(store, DATA_PATH)
-            st.success(
+            backfill = stats.get("coverage_days_backfilled", 0)
+            msg = (
                 f"Imported {stats['rows_imported']} rows · "
                 f"Skipped {stats['rows_skipped_duplicate']} duplicates · "
                 f"Skipped {stats['rows_skipped_zero_amount']} zero-amount/zero-qty"
             )
+            if backfill:
+                msg += f" · Backfilled {backfill} day entries for the calendar"
+            st.success(msg)
         except ValueError as e:
             st.error(str(e))
         else:
@@ -126,8 +130,8 @@ Re-uploading newer exports is fine — overlapping orders are deduplicated autom
         st.markdown(calendar_html, unsafe_allow_html=True)
     elif sidebar_store.get("uploads"):
         st.caption(
-            "Calendar is empty for data imported before this feature. "
-            "Re-upload your CSVs (duplicates are skipped) to backfill dates."
+            "Upload a shipment CSV again to fill the calendar. "
+            "SKU totals stay deduplicated; only missing dates are added."
         )
     else:
         st.caption("Days with sales appear highlighted once you upload data.")

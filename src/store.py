@@ -6,7 +6,7 @@ from pathlib import Path
 from typing import Any
 
 from src.aggregate import apply_shipment_to_sku, ensure_sku_record, new_store
-from src.coverage import ensure_sales_by_day, record_shipment_day
+from src.coverage import ensure_sales_by_day, ensure_sales_day_keys, record_shipment_day_for_row
 from src.parser import ShipmentRow
 
 DEFAULT_DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "aggregates.json"
@@ -24,6 +24,7 @@ def load_store(path: Path = DEFAULT_DATA_PATH) -> dict[str, Any]:
     if "uploads" not in data:
         data["uploads"] = []
     ensure_sales_by_day(data)
+    ensure_sales_day_keys(data)
     return data
 
 
@@ -45,11 +46,14 @@ def ingest_rows(
     processed = set(store.get("processed_keys", []))
     imported = 0
     skipped_duplicate = 0
+    coverage_backfilled = 0
 
     for row in rows:
         key = row.dedup_key
         if key in processed:
             skipped_duplicate += 1
+            if record_shipment_day_for_row(store, row):
+                coverage_backfilled += 1
             continue
 
         sku_record = ensure_sku_record(store, row.merchant_sku)
@@ -60,7 +64,7 @@ def ingest_rows(
             row.quantity,
             row.product_amount,
         )
-        record_shipment_day(store, row.shipment_date)
+        record_shipment_day_for_row(store, row)
         processed.add(key)
         imported += 1
 
@@ -73,6 +77,7 @@ def ingest_rows(
             "rows_imported": imported,
             "rows_skipped_duplicate": skipped_duplicate,
             "rows_skipped_zero_amount": rows_skipped_zero_amount,
+            "coverage_days_backfilled": coverage_backfilled,
         }
     )
 
@@ -80,6 +85,7 @@ def ingest_rows(
         "rows_imported": imported,
         "rows_skipped_duplicate": skipped_duplicate,
         "rows_skipped_zero_amount": rows_skipped_zero_amount,
+        "coverage_days_backfilled": coverage_backfilled,
     }
 
 

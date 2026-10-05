@@ -73,6 +73,7 @@ def new_store() -> dict[str, Any]:
         "processed_keys": [],
         "uploads": [],
         "sales_by_day": {},
+        "sales_day_keys": [],
         "skus": {},
     }
 
