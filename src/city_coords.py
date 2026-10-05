@@ -105,10 +105,7 @@ def normalize_city_name(city: str) -> str:
     return cleaned
 
 
-def city_coordinates(city: str) -> Tuple[float, float] | None:
-    key = normalize_city_name(city)
-    if key in CITY_COORDINATES:
-        return CITY_COORDINATES[key]
-    if city.strip().upper() in CITY_COORDINATES:
-        return CITY_COORDINATES[city.strip().upper()]
-    return None
+def city_coordinates(city: str, state: str = "") -> Tuple[float, float] | None:
+    from src.geocode import get_city_coordinates
+
+    return get_city_coordinates(city, state, allow_fetch=False)

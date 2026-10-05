@@ -1,4 +1,5 @@
 data/aggregates.json
+data/geocode_cache.json
 __pycache__/
 *.pyc
 .venv/

@@ -5,7 +5,7 @@ from typing import Any
 
 
 def _empty_bucket() -> dict[str, Any]:
-    return {"quantity": 0, "revenue_inr": 0.0, "by_day": {}}
+    return {"quantity": 0, "revenue_inr": 0.0, "by_day": {}, "state": ""}
 
 
 def _add_to_bucket(bucket: dict[str, Any], quantity: int, revenue: float) -> None:
@@ -50,6 +50,8 @@ def apply_shipment_to_sku(sku_record: dict[str, Any], city: str, state: str, qua
     cities = sku_record.setdefault("cities", {})
     if city not in cities:
         cities[city] = _empty_bucket()
+    if state:
+        cities[city]["state"] = state
     _add_to_bucket(cities[city], quantity, revenue)
 
     states = sku_record.setdefault("states", {})

@@ -6,7 +6,12 @@ import pandas as pd
 import plotly.express as px
 import streamlit as st
 
-from src.city_coords import city_coordinates, normalize_city_name
+from src.city_coords import normalize_city_name
+from src.geocode import (
+    collect_city_states,
+    ensure_coordinates_for_cities,
+    get_city_coordinates,
+)
 from src.constants import SESSION_MAP_SKU
 from src.fulfillment import Metric
 from src.map_selection import selected_cities_from_plotly_state, summarize_area_selection
@@ -29,7 +34,8 @@ def _sku_city_map_df(sku_data: dict[str, Any], metric: Metric) -> tuple[pd.DataF
         if value <= 0:
             continue
 
-        coords = city_coordinates(city)
+        state = str(bucket.get("state") or "").strip()
+        coords = get_city_coordinates(city, state, allow_fetch=False)
         if not coords:
             missing.append(city)
             continue
@@ -140,6 +146,29 @@ def render_maps_tab(skus: dict[str, Any], metric: Metric) -> None:
     )
     if not sku_choice:
         sku_choice = st.session_state[SESSION_MAP_SKU]
+
+    city_states = collect_city_states(skus)
+    pending = sum(
+        1
+        for c, st in city_states.items()
+        if get_city_coordinates(c, st, allow_fetch=False) is None
+    )
+    if pending:
+        st.caption(f"Looking up coordinates for **{pending}** new cities (one-time, cached)…")
+        progress = st.progress(0.0, text="Geocoding cities in India…")
+
+        def _on_progress(done: int, total: int) -> None:
+            progress.progress(done / total if total else 1.0, text=f"Geocoding {done}/{total}…")
+
+        stats = ensure_coordinates_for_cities(city_states, progress=_on_progress)
+        progress.empty()
+        if stats["resolved"]:
+            st.success(f"Located **{stats['resolved']}** cities on the map (saved for next time).")
+        if stats["failed"]:
+            st.warning(
+                f"Could not locate **{stats['failed']}** cities automatically. "
+                "They remain listed under “Cities not on map”."
+            )
 
     rec = skus[sku_choice]
     df, missing = _sku_city_map_df(rec, metric)

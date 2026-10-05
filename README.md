@@ -25,6 +25,10 @@ Aggregates are stored in `data/aggregates.json` (gitignored).
 - **Top city / state per SKU**: ranked by **units shipped** (sum of `Quantity`); revenue is `Product Amount` in INR.
 - City and state names are normalized to **uppercase** for consistent grouping.
 
+## Map geocoding
+
+The Maps tab looks up city coordinates via [Open-Meteo Geocoding](https://open-meteo.com/en/docs/geocoding-api) (free, no API key), with OpenStreetMap Nominatim as fallback. Results are cached in `data/geocode_cache.json`.
+
 ## Tests
 
 ```bash
