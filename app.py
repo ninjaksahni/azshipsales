@@ -74,8 +74,24 @@ def bucket_to_df(buckets: dict, name_col: str) -> pd.DataFrame:
     )
 
 
+SHIPMENT_REPORT_URL = (
+    "https://sellercentral.amazon.in/reportcentral/SHIPMENT_SALES/1"
+)
+
 with st.sidebar:
     st.header("Upload CSV")
+    with st.expander("Where to download the file", expanded=True):
+        st.markdown(
+            f"""
+1. Sign in to [Amazon Seller Central (India)](https://sellercentral.amazon.in/).
+2. Open the **Shipment Sales** report:  
+   [Report Central → Shipment Sales]({SHIPMENT_REPORT_URL})
+3. Download the report as **CSV** (last 30 days shipment data).
+4. Upload that `.csv` file below.
+
+Re-uploading newer exports is fine — overlapping orders are deduplicated automatically.
+            """.strip()
+        )
     uploaded = st.file_uploader("Amazon shipment report", type=["csv"])
     if uploaded is not None:
         store = load_or_init()
