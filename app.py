@@ -94,7 +94,7 @@ Re-uploading newer exports is fine — overlapping orders are deduplicated autom
         store = _get_store()
 
     st.divider()
-    st.subheader("Sales coverage")
+    st.subheader("Shipment coverage")
     sales_by_day = store.get("sales_by_day", {})
     st.markdown(coverage_summary_text(sales_by_day))
     calendar_html = coverage_calendar_html(sales_by_day)
@@ -106,7 +106,7 @@ Re-uploading newer exports is fine — overlapping orders are deduplicated autom
             "SKU totals stay deduplicated; only missing dates are added."
         )
     else:
-        st.caption("Days with sales appear highlighted once you upload data.")
+        st.caption("Days with shipments appear highlighted once you upload data.")
 
     st.divider()
     st.header("Data")

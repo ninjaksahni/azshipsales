@@ -58,7 +58,7 @@ def coverage_summary_text(sales_by_day: dict[str, int]) -> str:
 
     months_part = ", ".join(month_labels)
     return (
-        f"Sales recorded on **{day_count}** day{'s' if day_count != 1 else ''} "
+        f"Shipments recorded on **{day_count}** day{'s' if day_count != 1 else ''} "
         f"from **{start_s}** through **{end_s}** "
         f"across **{len(month_labels)}** month{'s' if len(month_labels) != 1 else ''}**: {months_part}."
     )
