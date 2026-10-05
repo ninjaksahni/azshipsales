@@ -107,34 +107,34 @@ def _render_sku_tab(skus: dict[str, Any], metric: Metric, store: dict[str, Any])
     if SESSION_SKU not in st.session_state or st.session_state[SESSION_SKU] not in sku_list:
         st.session_state[SESSION_SKU] = fallback
 
-    col_pick, col_detail = st.columns([1, 2], gap="large")
-    with col_pick:
-        st.markdown("##### Choose SKU")
-        sku_choice = st.selectbox(
-            "Product (SKU)",
-            sku_list,
-            key=SESSION_SKU,
-            label_visibility="collapsed",
-        )
+    st.markdown("##### Choose SKU")
+    sku_choice = st.pills(
+        "Product (SKU)",
+        options=sku_list,
+        selection_mode="single",
+        key=SESSION_SKU,
+        label_visibility="collapsed",
+    )
+    if not sku_choice:
+        sku_choice = st.session_state.get(SESSION_SKU) or fallback
 
     rec = skus[sku_choice]
     ranked_cities = ranked_places_for_sku(rec, "cities", metric)
 
-    with col_detail:
-        st.markdown("##### Fulfillment priority")
-        if ranked_cities:
-            top = ranked_cities[0]
-            st.success(
-                format_hero_sku_to_city(
-                    sku_choice,
-                    top["name"],
-                    top["value"],
-                    top["share_pct"],
-                    metric,
-                )
+    st.markdown("##### Fulfillment priority")
+    if ranked_cities:
+        top = ranked_cities[0]
+        st.success(
+            format_hero_sku_to_city(
+                sku_choice,
+                top["name"],
+                top["value"],
+                top["share_pct"],
+                metric,
             )
-        else:
-            st.warning(f"No city data for **{sku_choice}** yet.")
+        )
+    else:
+        st.warning(f"No city data for **{sku_choice}** yet.")
 
     st.markdown("##### Priority markets for this SKU")
     city_df = places_table_df(
