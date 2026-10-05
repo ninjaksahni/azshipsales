@@ -94,7 +94,7 @@ def _india_bubble_map(df: pd.DataFrame, sku: str, metric: Metric) -> Any:
         margin=dict(l=0, r=0, t=44, b=0, pad=0),
         coloraxis_showscale=False,
         autosize=True,
-        dragmode="select",
+        dragmode="pan",
         paper_bgcolor="rgba(0,0,0,0)",
         plot_bgcolor="rgba(0,0,0,0)",
         map=dict(domain=dict(x=[0.0, 1.0], y=[0.0, 1.0])),
@@ -106,8 +106,8 @@ def _render_selection_panel(summary: dict[str, Any]) -> None:
     st.markdown("##### Selected area of interest")
     if summary["city_count"] == 0:
         st.info(
-            "**Drag a rectangle** on the map to select cities. "
-            "Tip: click and drag on the map; selected bubbles highlight automatically."
+            "**Pan:** drag the map to move. **Select area:** use the **box select** tool "
+            "in the map toolbar (top-right), then drag a rectangle over cities."
         )
         return
 
@@ -124,8 +124,8 @@ def _render_selection_panel(summary: dict[str, Any]) -> None:
 def render_maps_tab(skus: dict[str, Any], metric: Metric) -> None:
     st.markdown("##### Map — where this SKU ships")
     st.caption(
-        "Bubble size shows demand in each city. **Drag a rectangle** on the map to "
-        "summarize shipments in that area."
+        "Drag to **pan** the map. Use the toolbar **box select** tool, then drag a "
+        "rectangle to summarize shipments in that area."
     )
 
     sku_list = ensure_default_sku(skus, metric)
@@ -174,11 +174,11 @@ def render_maps_tab(skus: dict[str, Any], metric: Metric) -> None:
             "displayModeBar": True,
             "modeBarButtonsToRemove": [
                 "zoom2d",
-                "pan2d",
                 "zoomIn2d",
                 "zoomOut2d",
                 "autoScale2d",
                 "resetScale2d",
+                "lasso2d",
             ],
             "responsive": True,
         },
