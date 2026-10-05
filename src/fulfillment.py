@@ -91,9 +91,38 @@ def ranked_skus_for_city(
     return rows
 
 
+def store_summary(skus: dict[str, Any]) -> dict[str, int | float]:
+    city_index = build_city_index(skus)
+    return {
+        "sku_count": len(skus),
+        "city_count": len(city_index),
+        "total_units": sum(int(s.get("total_quantity", 0)) for s in skus.values()),
+        "total_revenue_inr": sum(float(s.get("total_revenue_inr", 0)) for s in skus.values()),
+    }
+
+
+def skus_sorted(skus: dict[str, Any], metric: Metric) -> list[str]:
+    return sorted(skus.keys(), key=lambda s: -_sku_total(skus[s], metric))
+
+
+def cities_sorted(city_index: dict[str, dict[str, Any]], metric: Metric) -> list[str]:
+    def total(c: str) -> float:
+        e = city_index[c]
+        return float(e["quantity"]) if metric == "units" else float(e["revenue_inr"])
+
+    return sorted(city_index.keys(), key=lambda c: -total(c))
+
+
+def filter_cities(cities: list[str], query: str) -> list[str]:
+    q = query.strip().upper()
+    if not q:
+        return cities
+    return [c for c in cities if q in c]
+
+
 def sku_glance_dataframe(skus: dict[str, Any], metric: Metric) -> pd.DataFrame:
     rows = []
-    value_label = "Units" if metric == "units" else "Revenue (₹)"
+    value_label = "Top market (units)" if metric == "units" else "Top market (₹)"
     for sku, data in skus.items():
         ranked = ranked_places_for_sku(data, "cities", metric, limit=3)
         if not ranked:
@@ -101,6 +130,7 @@ def sku_glance_dataframe(skus: dict[str, Any], metric: Metric) -> pd.DataFrame:
         top = ranked[0]
         row = {
             "SKU": sku,
+            "Total units": int(data.get("total_quantity", 0)),
             "Send most to": top["name"],
             value_label: int(top["value"]) if metric == "units" else round(top["value"], 2),
             "Share of SKU": f"{top['share_pct']}%",
@@ -117,10 +147,16 @@ def sku_glance_dataframe(skus: dict[str, Any], metric: Metric) -> pd.DataFrame:
         return pd.DataFrame()
 
     df = pd.DataFrame(rows)
-    sort_col = value_label
     totals = {sku: _sku_total(skus[sku], metric) for sku in df["SKU"]}
     df["_sort"] = df["SKU"].map(totals)
     return df.sort_values("_sort", ascending=False).drop(columns="_sort").reset_index(drop=True)
+
+
+def chart_series_from_table(df: pd.DataFrame, index_col: str, metric: Metric) -> pd.Series:
+    if df.empty:
+        return pd.Series(dtype=float)
+    value_col = "Units" if metric == "units" else "Revenue (₹)"
+    return df.head(8).set_index(index_col)[value_col]
 
 
 def places_table_df(ranked: list[dict[str, Any]], metric: Metric, place_label: str) -> pd.DataFrame:

@@ -1,28 +1,29 @@
 from __future__ import annotations
 
-import json
 from pathlib import Path
 
-import pandas as pd
 import streamlit as st
 
-from src.coverage import coverage_calendar_html, coverage_summary_text
-from src.fulfillment import (
-    Metric,
-    build_city_index,
-    default_city,
-    default_sku,
-    format_hero_city_to_sku,
-    format_hero_sku_to_city,
-    places_table_df,
-    ranked_places_for_sku,
-    ranked_skus_for_city,
-    sku_glance_dataframe,
+from src.constants import (
+    SESSION_CONFIRM_RESET,
+    SHIPMENT_REPORT_URL,
 )
-from src.parser import parse_shipment_csv
-from src.store import DEFAULT_DATA_PATH, ingest_rows, load_store, reset_store, save_store
+from src.coverage import coverage_calendar_html, coverage_summary_text
+from src.store import DEFAULT_DATA_PATH, reset_store
+from src.store_cache import load_store_snapshot, store_mtime_ns
+from src.ui_main import render_main
+from src.upload_handler import (
+    clear_upload_session_keys,
+    format_cached_upload_notice,
+    handle_csv_upload,
+)
 
-st.set_page_config(page_title="Fulfillment by city & SKU", layout="wide")
+st.set_page_config(
+    page_title="Fulfillment by city & SKU",
+    layout="wide",
+    initial_sidebar_state="expanded",
+)
+
 st.title("Where to fulfill")
 st.caption(
     "See which city sells each SKU most — and what to stock in each city. "
@@ -32,17 +33,23 @@ st.caption(
 DATA_PATH = DEFAULT_DATA_PATH
 
 
-def load_or_init() -> dict:
-    return load_store(DATA_PATH)
+@st.cache_data(show_spinner=False)
+def _cached_store(path_str: str, mtime_ns: int) -> dict:
+    return load_store_snapshot(Path(path_str))
 
 
-SHIPMENT_REPORT_URL = (
-    "https://sellercentral.amazon.in/reportcentral/SHIPMENT_SALES/1"
-)
+def _get_store() -> dict:
+    mtime = store_mtime_ns(DATA_PATH)
+    return _cached_store(str(DATA_PATH), mtime)
 
-sidebar_store = load_or_init()
 
-with st.sidebar:
+def _invalidate_store_cache() -> None:
+    _cached_store.clear()
+
+
+def render_sidebar() -> None:
+    store = _get_store()
+
     st.header("Upload CSV")
     with st.expander("Where to download the file", expanded=False):
         st.markdown(
@@ -55,41 +62,35 @@ with st.sidebar:
 Re-uploading newer exports is fine — overlapping orders are deduplicated automatically.
             """.strip()
         )
-    uploaded = st.file_uploader("Amazon shipment report", type=["csv"])
+
+    uploaded = st.file_uploader(
+        "Amazon shipment report",
+        type=["csv"],
+        key="shipment_csv_uploader",
+    )
     if uploaded is not None:
-        store = load_or_init()
-        try:
-            parsed = parse_shipment_csv(uploaded.getvalue())
-            stats = ingest_rows(
-                store,
-                parsed.rows,
-                uploaded.name,
-                parsed.rows_read,
-                parsed.rows_skipped_zero_amount,
-            )
-            save_store(store, DATA_PATH)
-            backfill = stats.get("coverage_days_backfilled", 0)
-            msg = (
-                f"Imported {stats['rows_imported']} rows · "
-                f"Skipped {stats['rows_skipped_duplicate']} duplicates · "
-                f"Skipped {stats['rows_skipped_zero_amount']} zero-amount/zero-qty"
-            )
-            if backfill:
-                msg += f" · Backfilled {backfill} day entries for the calendar"
-            st.success(msg)
-        except ValueError as e:
-            st.error(str(e))
+        outcome = handle_csv_upload(uploaded, DATA_PATH)
+        if outcome is None:
+            st.caption(format_cached_upload_notice())
+        elif outcome.level == "error":
+            st.error(outcome.message)
+            _invalidate_store_cache()
+        elif outcome.level == "warning":
+            st.warning(outcome.message)
+            _invalidate_store_cache()
         else:
-            sidebar_store = load_or_init()
+            st.success(outcome.message)
+            _invalidate_store_cache()
+        store = _get_store()
 
     st.divider()
     st.subheader("Sales coverage")
-    sales_by_day = sidebar_store.get("sales_by_day", {})
+    sales_by_day = store.get("sales_by_day", {})
     st.markdown(coverage_summary_text(sales_by_day))
     calendar_html = coverage_calendar_html(sales_by_day)
     if calendar_html:
         st.markdown(calendar_html, unsafe_allow_html=True)
-    elif sidebar_store.get("uploads"):
+    elif store.get("uploads"):
         st.caption(
             "Upload a shipment CSV again to fill the calendar. "
             "SKU totals stay deduplicated; only missing dates are added."
@@ -100,165 +101,20 @@ Re-uploading newer exports is fine — overlapping orders are deduplicated autom
     st.divider()
     st.header("Data")
     if st.button("Reset all stored data", type="secondary"):
-        st.session_state["confirm_reset"] = True
+        st.session_state[SESSION_CONFIRM_RESET] = True
 
-    if st.session_state.get("confirm_reset"):
+    if st.session_state.get(SESSION_CONFIRM_RESET):
         st.warning("This deletes all aggregates and upload history.")
         if st.button("Confirm reset", type="primary"):
             reset_store(DATA_PATH)
-            st.session_state.pop("confirm_reset", None)
+            clear_upload_session_keys()
+            _invalidate_store_cache()
+            st.session_state.pop(SESSION_CONFIRM_RESET, None)
             st.success("Data cleared.")
             st.rerun()
 
-store = load_or_init()
-skus = store.get("skus", {})
 
-if not skus:
-    st.info(
-        "No shipment data yet. Use **Upload CSV** in the sidebar to add your "
-        "Amazon Shipment Sales report."
-    )
-    st.stop()
+with st.sidebar:
+    render_sidebar()
 
-metric_label = st.radio(
-    "Rank by",
-    options=["Units (for fulfillment)", "Revenue (₹)"],
-    horizontal=True,
-    help="Units = how many items shipped. Revenue = product amount in INR.",
-)
-metric: Metric = "units" if metric_label.startswith("Units") else "revenue"
-
-tab_sku, tab_city = st.tabs(["SKU → markets", "City → assortment"])
-
-with tab_sku:
-    st.markdown("##### At a glance — where to send each product")
-    glance = sku_glance_dataframe(skus, metric)
-    st.dataframe(glance, use_container_width=True, hide_index=True)
-
-    sku_list = sorted(skus.keys(), key=lambda s: -(
-        skus[s]["total_quantity"] if metric == "units" else skus[s]["total_revenue_inr"]
-    ))
-    default = default_sku(skus, metric) or sku_list[0]
-
-    col_pick, col_detail = st.columns([1, 2])
-    with col_pick:
-        st.markdown("##### Choose SKU")
-        sku_choice = st.selectbox(
-            "Product (SKU)",
-            sku_list,
-            index=sku_list.index(default) if default in sku_list else 0,
-            label_visibility="collapsed",
-        )
-
-    rec = skus[sku_choice]
-    ranked_cities = ranked_places_for_sku(rec, "cities", metric)
-
-    with col_detail:
-        if ranked_cities:
-            top = ranked_cities[0]
-            st.success(
-                format_hero_sku_to_city(
-                    sku_choice,
-                    top["name"],
-                    top["value"],
-                    top["share_pct"],
-                    metric,
-                )
-            )
-        else:
-            st.warning(f"No city data for **{sku_choice}** yet.")
-
-    st.markdown("##### Priority markets for this SKU")
-    top_n = ranked_places_for_sku(rec, "cities", metric, limit=10)
-    city_df = places_table_df(top_n, metric, "City")
-    chart_col, table_col = st.columns([1, 1])
-    with table_col:
-        st.dataframe(city_df, use_container_width=True, hide_index=True)
-    with chart_col:
-        if not city_df.empty:
-            chart_label = "Units" if metric == "units" else "Revenue (₹)"
-            chart_data = city_df.head(8).set_index("City")[chart_label]
-            st.bar_chart(chart_data, horizontal=True)
-
-    with st.expander("By state (secondary)"):
-        state_ranked = ranked_places_for_sku(rec, "states", metric, limit=10)
-        st.dataframe(
-            places_table_df(state_ranked, metric, "State"),
-            use_container_width=True,
-            hide_index=True,
-        )
-
-with tab_city:
-    city_index = build_city_index(skus)
-    cities = sorted(
-        city_index.keys(),
-        key=lambda c: -(
-            city_index[c]["quantity"]
-            if metric == "units"
-            else city_index[c]["revenue_inr"]
-        ),
-    )
-    default_c = default_city(city_index, metric) or cities[0]
-
-    col_pick, col_detail = st.columns([1, 2])
-    with col_pick:
-        st.markdown("##### Choose city")
-        city_choice = st.selectbox(
-            "City",
-            cities,
-            index=cities.index(default_c) if default_c in cities else 0,
-            label_visibility="collapsed",
-        )
-
-    ranked_skus = ranked_skus_for_city(city_index, city_choice, metric)
-    with col_detail:
-        if ranked_skus:
-            top = ranked_skus[0]
-            st.success(
-                format_hero_city_to_sku(
-                    city_choice,
-                    top["name"],
-                    top["value"],
-                    top["share_pct"],
-                    metric,
-                )
-            )
-        else:
-            st.warning(f"No SKU data for **{city_choice}** yet.")
-
-    st.markdown("##### What to stock in this city")
-    sku_rank_df = places_table_df(
-        ranked_skus_for_city(city_index, city_choice, metric, limit=10),
-        metric,
-        "SKU",
-    )
-    chart_col, table_col = st.columns([1, 1])
-    with table_col:
-        st.dataframe(sku_rank_df, use_container_width=True, hide_index=True)
-    with chart_col:
-        if not sku_rank_df.empty:
-            chart_label = "Units" if metric == "units" else "Revenue (₹)"
-            st.bar_chart(
-                sku_rank_df.head(8).set_index("SKU")[chart_label],
-                horizontal=True,
-            )
-
-with st.expander("Settings & export"):
-    total_units = sum(int(s.get("total_quantity", 0)) for s in skus.values())
-    total_revenue = sum(float(s.get("total_revenue_inr", 0)) for s in skus.values())
-    m1, m2, m3 = st.columns(3)
-    m1.metric("Total units (all SKUs)", f"{total_units:,}")
-    m2.metric("Total revenue (INR)", f"{total_revenue:,.2f}")
-    m3.metric("Data uploads", len(store.get("uploads", [])))
-
-    if store.get("uploads"):
-        st.markdown("**Upload history**")
-        st.dataframe(pd.DataFrame(store["uploads"]), use_container_width=True, hide_index=True)
-
-    if DATA_PATH.exists():
-        st.download_button(
-            "Download aggregates.json",
-            data=json.dumps(store, indent=2, ensure_ascii=False),
-            file_name="aggregates.json",
-            mime="application/json",
-        )
+render_main(_get_store(), DATA_PATH)
