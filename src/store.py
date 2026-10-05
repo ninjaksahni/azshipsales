@@ -1,0 +1,86 @@
+from __future__ import annotations
+
+import json
+from datetime import datetime, timezone
+from pathlib import Path
+from typing import Any
+
+from src.aggregate import apply_shipment_to_sku, ensure_sku_record, new_store
+from src.parser import ShipmentRow
+
+DEFAULT_DATA_PATH = Path(__file__).resolve().parent.parent / "data" / "aggregates.json"
+
+
+def load_store(path: Path = DEFAULT_DATA_PATH) -> dict[str, Any]:
+    if not path.exists():
+        return new_store()
+    with path.open(encoding="utf-8") as f:
+        data = json.load(f)
+    if "processed_keys" not in data:
+        data["processed_keys"] = []
+    if "skus" not in data:
+        data["skus"] = {}
+    if "uploads" not in data:
+        data["uploads"] = []
+    return data
+
+
+def save_store(store: dict[str, Any], path: Path = DEFAULT_DATA_PATH) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    store["last_updated"] = datetime.now(timezone.utc).isoformat()
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(store, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+
+
+def ingest_rows(
+    store: dict[str, Any],
+    rows: list[ShipmentRow],
+    filename: str,
+    rows_read: int,
+    rows_skipped_zero_amount: int,
+) -> dict[str, int]:
+    processed = set(store.get("processed_keys", []))
+    imported = 0
+    skipped_duplicate = 0
+
+    for row in rows:
+        key = row.dedup_key
+        if key in processed:
+            skipped_duplicate += 1
+            continue
+
+        sku_record = ensure_sku_record(store, row.merchant_sku)
+        apply_shipment_to_sku(
+            sku_record,
+            row.city or "UNKNOWN",
+            row.state or "UNKNOWN",
+            row.quantity,
+            row.product_amount,
+        )
+        processed.add(key)
+        imported += 1
+
+    store["processed_keys"] = sorted(processed)
+    store.setdefault("uploads", []).append(
+        {
+            "filename": filename,
+            "uploaded_at": datetime.now(timezone.utc).isoformat(),
+            "rows_read": rows_read,
+            "rows_imported": imported,
+            "rows_skipped_duplicate": skipped_duplicate,
+            "rows_skipped_zero_amount": rows_skipped_zero_amount,
+        }
+    )
+
+    return {
+        "rows_imported": imported,
+        "rows_skipped_duplicate": skipped_duplicate,
+        "rows_skipped_zero_amount": rows_skipped_zero_amount,
+    }
+
+
+def reset_store(path: Path = DEFAULT_DATA_PATH) -> dict[str, Any]:
+    store = new_store()
+    save_store(store, path)
+    return store
