@@ -8,7 +8,12 @@ import streamlit as st
 
 from src.aggregate import recompute_sku_tops
 from src.constants import SESSION_SELECTED_MONTHS
-from src.coverage import _parse_day, shipment_calendar_styles_html, single_month_calendar_html
+from src.coverage import (
+    _format_day,
+    _parse_day,
+    shipment_calendar_styles_html,
+    single_month_calendar_html,
+)
 
 
 def month_keys_from_store(store: dict[str, Any]) -> list[str]:
@@ -35,6 +40,29 @@ def _month_key_for_day(day_str: str) -> str | None:
 def day_in_months(day_str: str, months: set[str]) -> bool:
     key = _month_key_for_day(day_str)
     return key is not None and key in months
+
+
+def selected_view_summary_text(
+    sales_by_day: dict[str, int],
+    selected_months: list[str],
+) -> str:
+    if not sales_by_day or not selected_months:
+        return ""
+    selected_set = set(selected_months)
+    days = sorted(d for d in sales_by_day if day_in_months(d, selected_set))
+    if not days:
+        return "No shipment days in the selected months."
+
+    start = _parse_day(days[0])
+    end = _parse_day(days[-1])
+    count = len(days)
+    start_s = _format_day(start) if start else days[0]
+    end_s = _format_day(end) if end else days[-1]
+    day_word = "day" if count == 1 else "days"
+    return (
+        f"Showing **{count}** shipment {day_word} · "
+        f"**{start_s}** through **{end_s}**"
+    )
 
 
 def get_selected_months(store: dict[str, Any]) -> list[str]:
@@ -162,6 +190,10 @@ def render_month_filter_sidebar(store: dict[str, Any]) -> None:
     if col_b.button("This month only", use_container_width=True):
         _set_month_selection(months, [months[-1]])
         st.rerun()
+
+    summary = selected_view_summary_text(sales_by_day, list(selected))
+    if summary:
+        st.markdown(summary)
 
     st.markdown(shipment_calendar_styles_html(), unsafe_allow_html=True)
 
