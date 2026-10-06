@@ -1,6 +1,6 @@
 {
   "schema_version": 1,
-  "last_updated": "2026-10-06T04:03:31.681564+00:00",
+  "last_updated": "2026-10-06T04:03:33.664768+00:00",
   "processed_keys": [
     "171-0105629-7697965|PT16RG",
     "171-0111131-8837116|PT16",
@@ -1160,6 +1160,16 @@
       "rows_imported": 158,
       "rows_skipped_duplicate": 0,
       "rows_skipped_zero_amount": 9,
+      "coverage_days_backfilled": 0,
+      "timeline_backfilled": 0
+    },
+    {
+      "filename": "66624020731.csv",
+      "uploaded_at": "2026-10-06T04:03:33.664711+00:00",
+      "rows_read": 6,
+      "rows_imported": 0,
+      "rows_skipped_duplicate": 6,
+      "rows_skipped_zero_amount": 0,
       "coverage_days_backfilled": 0,
       "timeline_backfilled": 0
     }
