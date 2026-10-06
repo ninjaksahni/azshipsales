@@ -34,8 +34,10 @@ from src.fulfillment import (
 from src.session_prefs import get_metric
 from src.sku_selection import init_sku_selection, read_selected_skus
 from src.store_cache import store_to_json_bytes
+from src.ui_charts import render_priority_markets_bar_chart
 from src.ui_maps import render_maps_tab
 from src.ui_momentum import render_market_momentum
+from src.velocity import has_timeline_data, momentum_for_sku
 
 
 def _metric_column_config(metric: Metric) -> dict[str, Any]:
@@ -143,11 +145,16 @@ def _render_sku_tab(skus: dict[str, Any], metric: Metric, store: dict[str, Any])
         st.warning(f"No city data for **{sku_label}** yet.")
 
     st.markdown("##### Priority markets for selected SKU(s)")
-    city_df = places_table_df(
-        ranked_places_for_sku(rec, "cities", metric, limit=10),
-        metric,
-        "City",
-    )
+    city_ranked = ranked_places_for_sku(rec, "cities", metric, limit=10)
+    city_df = places_table_df(city_ranked, metric, "City")
+    priority_cities = [row["name"] for row in city_ranked]
+
+    surging_cities: set[str] = set()
+    if has_timeline_data(rec):
+        for item in momentum_for_sku(rec, store, priority_cities):
+            if item.label == "surging":
+                surging_cities.add(item.city)
+
     chart_col, table_col = st.columns([1, 1], gap="medium")
     with table_col:
         st.dataframe(
@@ -157,13 +164,9 @@ def _render_sku_tab(skus: dict[str, Any], metric: Metric, store: dict[str, Any])
             column_config=_metric_column_config(metric),
         )
     with chart_col:
-        series = chart_series_from_table(city_df, "City", metric)
-        if not series.empty:
-            st.bar_chart(series, horizontal=True)
-        else:
-            st.caption("No chart data.")
+        render_priority_markets_bar_chart(city_df, metric, surging_cities)
+        st.caption("Green = top market · Yellow = surging (7d momentum) · Blue = other")
 
-    priority_cities = city_df["City"].tolist() if not city_df.empty else []
     render_market_momentum(sku_label, rec, store, priority_cities)
 
     with st.expander("By state (secondary)"):
