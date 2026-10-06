@@ -4,6 +4,7 @@ from pathlib import Path
 
 import streamlit as st
 
+from src.app_auth import require_login
 from src.constants import (
     SESSION_CONFIRM_RESET,
     SHIPMENT_REPORT_URL,
@@ -29,6 +30,8 @@ st.set_page_config(
     layout="wide",
     initial_sidebar_state="expanded",
 )
+
+require_login()
 
 st.title("Where to fulfill")
 st.caption(
