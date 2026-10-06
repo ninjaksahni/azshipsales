@@ -129,6 +129,14 @@ def _filter_sku_record(sku_data: dict[str, Any], months: set[str]) -> dict[str, 
     return out
 
 
+def _set_month_selection(months: list[str], selected: list[str]) -> None:
+    """Update session selection and checkbox widget state (widgets own their keys)."""
+    st.session_state[SESSION_SELECTED_MONTHS] = selected
+    selected_set = set(selected)
+    for month_key in months:
+        st.session_state[f"month_filter_{month_key}"] = month_key in selected_set
+
+
 def render_month_filter_sidebar(store: dict[str, Any]) -> None:
     months = month_keys_from_store(store)
     if not months:
@@ -144,10 +152,10 @@ def render_month_filter_sidebar(store: dict[str, Any]) -> None:
 
     col_a, col_b = st.columns(2)
     if col_a.button("Select all months", use_container_width=True):
-        st.session_state[SESSION_SELECTED_MONTHS] = months
+        _set_month_selection(months, months)
         st.rerun()
     if col_b.button("This month only", use_container_width=True):
-        st.session_state[SESSION_SELECTED_MONTHS] = [months[-1]]
+        _set_month_selection(months, [months[-1]])
         st.rerun()
 
     st.markdown(shipment_calendar_styles_html(), unsafe_allow_html=True)
