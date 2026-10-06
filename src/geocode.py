@@ -28,11 +28,15 @@ def load_geocode_cache() -> dict[str, Any]:
         return json.load(f)
 
 
-def save_geocode_cache(cache: dict[str, Any]) -> None:
+def save_geocode_cache(cache: dict[str, Any], *, sync_remote: bool = True) -> None:
     CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
     with CACHE_PATH.open("w", encoding="utf-8") as f:
         json.dump(cache, f, indent=2, ensure_ascii=False)
         f.write("\n")
+    if sync_remote:
+        from src.store_sync import push_geocode_snapshot
+
+        push_geocode_snapshot(cache, CACHE_PATH)
 
 
 def _static_coords(city: str) -> tuple[float, float] | None:
@@ -138,6 +142,7 @@ def get_city_coordinates(
     *,
     allow_fetch: bool = True,
     cache: dict[str, Any] | None = None,
+    sync_cache: bool = True,
 ) -> tuple[float, float] | None:
     key = _cache_key(city)
     if not key:
@@ -169,14 +174,14 @@ def get_city_coordinates(
             "city": city,
             "state": state,
         }
-        save_geocode_cache(cache)
+        save_geocode_cache(cache, sync_remote=sync_cache)
     else:
         cache[key] = {
             "failed": True,
             "city": city,
             "state": state,
         }
-        save_geocode_cache(cache)
+        save_geocode_cache(cache, sync_remote=sync_cache)
     return coords
 
 
@@ -221,14 +226,21 @@ def ensure_coordinates_for_cities(
             progress(i, total)
         before = len(cache)
         coords = get_city_coordinates(
-            city, city_states[city], allow_fetch=True, cache=cache
+            city,
+            city_states[city],
+            allow_fetch=True,
+            cache=cache,
+            sync_cache=False,
         )
         if coords:
             resolved += 1
         else:
             failed += 1
         if len(cache) > before:
-            save_geocode_cache(cache)
+            save_geocode_cache(cache, sync_remote=False)
+
+    if missing:
+        save_geocode_cache(cache, sync_remote=True)
 
     return {"resolved": resolved, "failed": failed, "already": len(city_states) - total}
 

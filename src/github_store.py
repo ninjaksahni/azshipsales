@@ -90,13 +90,19 @@ def download_bytes(cfg: dict[str, str]) -> tuple[bytes, str | None] | None:
     return raw, sha if isinstance(sha, str) else None
 
 
-def upload_bytes(cfg: dict[str, str], payload: bytes, sha: str | None = None) -> None:
+def upload_bytes(
+    cfg: dict[str, str],
+    payload: bytes,
+    sha: str | None = None,
+    *,
+    message: str = "Update app data",
+) -> None:
     ensure_branch(cfg)
     branch = cfg.get("branch", "appdata")
     file_path = cfg.get("path", "aggregates.json")
     quoted = urllib.parse.quote(file_path, safe="/")
     body: dict[str, Any] = {
-        "message": "Update shipment aggregates",
+        "message": message,
         "content": base64.b64encode(payload).decode("ascii"),
         "branch": branch,
     }

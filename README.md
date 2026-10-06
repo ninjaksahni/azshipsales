@@ -18,7 +18,7 @@ streamlit run app.py
 
 Upload shipment CSV exports from Seller Central. Re-uploading overlapping reports is safe: rows are deduplicated by **Amazon Order Id + Merchant SKU**. Rows with **Product Amount = 0** are excluded.
 
-Aggregates are stored in `data/aggregates.json` locally (gitignored). On **Streamlit Cloud**, configure **[github_store]** in app **Secrets** (see `.streamlit/secrets.toml.example`): the app saves `aggregates.json` on GitHub branch `appdata` on every upload and loads it on startup, so data survives redeploys. Local runs without secrets keep using the file only.
+Aggregates are stored in `data/aggregates.json` locally (gitignored). Map geocodes use `data/geocode_cache.json` (also gitignored). On **Streamlit Cloud**, configure **[github_store]** in app **Secrets** (see `.streamlit/secrets.toml.example`): both files sync to GitHub branch `appdata` on save and reload on startup. Local runs without secrets keep using files only.
 
 ## Metrics
 

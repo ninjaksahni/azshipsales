@@ -43,13 +43,19 @@ def get_github_store_config() -> dict[str, str] | None:
     repo = str(section.get("repo", "")).strip()
     if not token or not owner or not repo:
         return None
+    geocode_path = str(section.get("geocode_path", "geocode_cache.json")).strip()
     return {
         "token": token,
         "owner": owner,
         "repo": repo,
         "branch": str(section.get("branch", "appdata")).strip() or "appdata",
         "path": str(section.get("path", "aggregates.json")).strip() or "aggregates.json",
+        "geocode_path": geocode_path or "geocode_cache.json",
     }
+
+
+def _cfg_at_path(cfg: dict[str, str], path: str) -> dict[str, str]:
+    return {**cfg, "path": path}
 
 
 def remote_store_enabled() -> bool:
@@ -63,10 +69,7 @@ def _write_bytes(path: Path, payload: bytes) -> None:
 
 
 def hydrate_local_store(path: Path) -> bool:
-    """
-    Pull remote aggregates into the local path when configured.
-    Returns True if a remote object was applied or pushed.
-    """
+    """Pull remote aggregates into the local path when configured."""
     cfg = get_github_store_config()
     if not cfg:
         _set_sync_error(None)
@@ -124,7 +127,88 @@ def push_store_snapshot(store: dict[str, Any], path: Path | None = None) -> None
     try:
         remote_hit = download_bytes(cfg)
         sha = remote_hit[1] if remote_hit else None
-        upload_bytes(cfg, payload, sha=sha)
+        upload_bytes(cfg, payload, sha=sha, message="Update shipment aggregates")
         _set_sync_error(None)
     except GitHubStoreError as exc:
         _set_sync_error(str(exc))
+
+
+def _merge_geocode_dicts(remote: dict[str, Any], local: dict[str, Any]) -> dict[str, Any]:
+    if not remote:
+        return dict(local)
+    if not local:
+        return dict(remote)
+    return {**remote, **local}
+
+
+def _write_geocode_file(path: Path, cache: dict[str, Any]) -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(cache, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+
+
+def hydrate_geocode_cache(path: Path) -> bool:
+    cfg = get_github_store_config()
+    if not cfg:
+        return False
+
+    remote_path = cfg["geocode_path"]
+    remote_cfg = _cfg_at_path(cfg, remote_path)
+
+    try:
+        remote_hit = download_bytes(remote_cfg)
+    except GitHubStoreError as exc:
+        _set_sync_error(str(exc))
+        return False
+
+    from src.geocode import load_geocode_cache
+
+    local = load_geocode_cache() if path.exists() else {}
+
+    if remote_hit is None:
+        if local:
+            push_geocode_snapshot(local, path)
+        return bool(local)
+
+    remote_bytes, _sha = remote_hit
+    try:
+        remote = json.loads(remote_bytes.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        _set_sync_error(f"Remote geocode cache JSON is invalid: {exc}")
+        return False
+    if not isinstance(remote, dict):
+        _set_sync_error("Remote geocode cache must be a JSON object.")
+        return False
+
+    merged = _merge_geocode_dicts(remote, local)
+    if merged != local:
+        _write_geocode_file(path, merged)
+        return True
+    if merged != remote:
+        push_geocode_snapshot(merged, path)
+        return True
+    return False
+
+
+def push_geocode_snapshot(cache: dict[str, Any], path: Path | None = None) -> None:
+    cfg = get_github_store_config()
+    if not cfg:
+        return
+
+    remote_cfg = _cfg_at_path(cfg, cfg["geocode_path"])
+    payload = json.dumps(cache, indent=2, ensure_ascii=False).encode("utf-8")
+    try:
+        remote_hit = download_bytes(remote_cfg)
+        sha = remote_hit[1] if remote_hit else None
+        upload_bytes(remote_cfg, payload, sha=sha, message="Update geocode cache")
+        _set_sync_error(None)
+    except GitHubStoreError as exc:
+        _set_sync_error(str(exc))
+
+
+def hydrate_all_app_data(aggregates_path: Path, geocode_path: Path) -> bool:
+    changed = hydrate_local_store(aggregates_path)
+    if hydrate_geocode_cache(geocode_path):
+        changed = True
+    return changed

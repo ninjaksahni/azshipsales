@@ -11,8 +11,9 @@ from src.constants import (
 from src.coverage import coverage_calendar_html, coverage_summary_text
 from src.store import DEFAULT_DATA_PATH, reset_store
 from src.store_cache import load_store_snapshot, store_mtime_ns
+from src.geocode import CACHE_PATH as GEOCODE_CACHE_PATH
 from src.store_sync import (
-    hydrate_local_store,
+    hydrate_all_app_data,
     is_streamlit_cloud,
     last_sync_error,
     remote_store_enabled,
@@ -46,7 +47,7 @@ def _cached_store(path_str: str, mtime_ns: int) -> dict:
 def _ensure_remote_hydrated() -> None:
     if st.session_state.get("_store_remote_hydrated"):
         return
-    if hydrate_local_store(DATA_PATH):
+    if hydrate_all_app_data(DATA_PATH, GEOCODE_CACHE_PATH):
         _invalidate_store_cache()
     st.session_state["_store_remote_hydrated"] = True
 
@@ -126,7 +127,9 @@ Re-uploading newer exports is fine — overlapping orders are deduplicated autom
     st.divider()
     st.header("Data")
     if remote_store_enabled():
-        st.caption("Aggregates sync to GitHub automatically (survives Cloud redeploys).")
+        st.caption(
+            "Aggregates and map geocodes sync to GitHub automatically (survives Cloud redeploys)."
+        )
     elif is_streamlit_cloud():
         st.warning(
             "Add **github_store** in the app’s Streamlit **Secrets** so uploads persist after "
