@@ -32,7 +32,7 @@ from src.fulfillment import (
     store_summary,
 )
 from src.session_prefs import get_metric
-from src.sku_selection import ensure_default_skus, selected_skus
+from src.sku_selection import init_sku_selection, read_selected_skus
 from src.store_cache import store_to_json_bytes
 from src.ui_maps import render_maps_tab
 from src.ui_momentum import render_market_momentum
@@ -81,7 +81,7 @@ def render_main(store: dict[str, Any], data_path: Path) -> None:
         help="Units = best for fulfillment planning. Revenue = product amount in INR.",
     )
     metric: Metric = get_metric()
-    ensure_default_skus(skus, metric)
+    init_sku_selection(skus, metric)
 
     tab_sku, tab_city, tab_maps = st.tabs(
         ["SKU → markets", "City → assortment", "Maps"]
@@ -110,7 +110,7 @@ def _render_sku_tab(skus: dict[str, Any], metric: Metric, store: dict[str, Any])
         column_config=_metric_column_config(metric),
     )
 
-    sku_list = ensure_default_skus(skus, metric)
+    sku_list = skus_sorted(skus, metric)
 
     st.markdown("##### Choose SKU")
     st.caption("Click to select or deselect. Charts combine all selected products.")
@@ -121,7 +121,7 @@ def _render_sku_tab(skus: dict[str, Any], metric: Metric, store: dict[str, Any])
         key=SESSION_SKUS,
         label_visibility="collapsed",
     )
-    sku_choices = selected_skus(skus, metric)
+    sku_choices = read_selected_skus(skus, metric)
     sku_label = format_sku_selection_label(sku_choices)
 
     rec = merge_sku_records(skus, sku_choices)

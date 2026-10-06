@@ -15,13 +15,13 @@ from src.geocode import (
     load_geocode_cache,
 )
 from src.constants import SESSION_MAP_SKU
-from src.fulfillment import Metric
+from src.fulfillment import Metric, skus_sorted
 from src.map_selection import (
     plotly_selection_dict,
     selected_cities_from_plotly_state,
     summarize_area_selection,
 )
-from src.sku_selection import ensure_default_sku, ensure_map_sku
+from src.sku_selection import ensure_map_sku
 
 
 def _sku_city_map_df(sku_data: dict[str, Any], metric: Metric) -> tuple[pd.DataFrame, list[str]]:
@@ -140,7 +140,7 @@ def render_maps_tab(skus: dict[str, Any], metric: Metric) -> None:
         "rectangle to summarize shipments in that area."
     )
 
-    sku_list = ensure_default_sku(skus, metric)
+    sku_list = skus_sorted(skus, metric)
     ensure_map_sku(skus, metric)
 
     sku_choice = st.pills(
