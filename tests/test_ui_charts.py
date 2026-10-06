@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import unittest
 
-from src.ui_charts import bar_colors_for_priority_cities
+from src.ui_charts import _bar_top_icons, bar_colors_for_priority_cities
 
 
 class UiChartsTests(unittest.TestCase):
@@ -12,6 +12,11 @@ class UiChartsTests(unittest.TestCase):
         self.assertEqual(colors[0], "#16a34a")
         self.assertEqual(colors[1], "#ca8a04")
         self.assertEqual(colors[2], "#2563eb")
+
+    def test_bar_top_icons(self) -> None:
+        icons = _bar_top_icons(["MUMBAI", "PUNE", "DELHI"], [10, 8, 3], {"PUNE"})
+        texts = [a["text"] for a in icons]
+        self.assertEqual(texts, ["👑", "🚀"])
 
 
 if __name__ == "__main__":

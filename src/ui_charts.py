@@ -23,6 +23,36 @@ def bar_colors_for_priority_cities(cities: list[str], surging_cities: set[str]) 
     return colors
 
 
+def _bar_top_icons(
+    cities: list[str],
+    values: list[float],
+    surging_cities: set[str],
+) -> list[dict]:
+    annotations: list[dict] = []
+    for i, (city, value) in enumerate(zip(cities, values)):
+        if value <= 0:
+            continue
+        if i == 0:
+            icon = "👑"
+        elif city in surging_cities:
+            icon = "🚀"
+        else:
+            continue
+        annotations.append(
+            {
+                "x": city,
+                "y": value,
+                "text": icon,
+                "showarrow": False,
+                "xanchor": "center",
+                "yanchor": "bottom",
+                "yshift": 8,
+                "font": {"size": 22},
+            }
+        )
+    return annotations
+
+
 def render_priority_markets_bar_chart(
     city_df: pd.DataFrame,
     metric: Metric,
@@ -47,8 +77,8 @@ def render_priority_markets_bar_chart(
         )
     )
     fig.update_layout(
-        height=420,
-        margin=dict(l=8, r=8, t=12, b=80),
+        height=440,
+        margin=dict(l=8, r=8, t=36, b=80),
         xaxis_title="City",
         yaxis_title=value_col,
         xaxis=dict(tickangle=-35, categoryorder="array", categoryarray=cities),
@@ -56,5 +86,6 @@ def render_priority_markets_bar_chart(
         showlegend=False,
         plot_bgcolor="rgba(0,0,0,0)",
         paper_bgcolor="rgba(0,0,0,0)",
+        annotations=_bar_top_icons(cities, values, surging_cities),
     )
     st.plotly_chart(fig, use_container_width=True)
