@@ -9,8 +9,8 @@ class UiChartsTests(unittest.TestCase):
     def test_bar_colors(self) -> None:
         cities = ["MUMBAI", "PUNE", "DELHI"]
         colors = bar_colors_for_priority_cities(cities, {"PUNE"})
-        self.assertEqual(colors[0], "#16a34a")
-        self.assertEqual(colors[1], "#ca8a04")
+        self.assertEqual(colors[0], "#2563eb")
+        self.assertEqual(colors[1], "#a3e635")
         self.assertEqual(colors[2], "#2563eb")
 
     def test_bar_top_icons(self) -> None:

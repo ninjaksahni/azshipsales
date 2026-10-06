@@ -165,7 +165,7 @@ def _render_sku_tab(skus: dict[str, Any], metric: Metric, store: dict[str, Any])
         )
     with chart_col:
         render_priority_markets_bar_chart(city_df, metric, surging_cities)
-        st.caption("Green = top market · Yellow = surging (7d momentum) · Blue = other")
+        st.caption("👑 top market · 🚀 surging (7d momentum) · Blue = volume · Yellow-green = surging")
 
     render_market_momentum(sku_label, rec, store, priority_cities)
 

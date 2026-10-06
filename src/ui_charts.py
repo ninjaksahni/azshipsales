@@ -6,17 +6,14 @@ import streamlit as st
 
 from src.fulfillment import Metric
 
-_COLOR_TOP = "#16a34a"
-_COLOR_SURGING = "#ca8a04"
+_COLOR_SURGING = "#a3e635"
 _COLOR_DEFAULT = "#2563eb"
 
 
 def bar_colors_for_priority_cities(cities: list[str], surging_cities: set[str]) -> list[str]:
     colors: list[str] = []
     for i, city in enumerate(cities):
-        if i == 0:
-            colors.append(_COLOR_TOP)
-        elif city in surging_cities:
+        if i != 0 and city in surging_cities:
             colors.append(_COLOR_SURGING)
         else:
             colors.append(_COLOR_DEFAULT)
