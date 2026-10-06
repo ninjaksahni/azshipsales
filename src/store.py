@@ -104,3 +104,22 @@ def reset_store(path: Path = DEFAULT_DATA_PATH) -> dict[str, Any]:
     store = new_store()
     save_store(store, path)
     return store
+
+
+def restore_store_from_bytes(payload: bytes, path: Path = DEFAULT_DATA_PATH) -> dict[str, Any]:
+    try:
+        data = json.loads(payload.decode("utf-8"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ValueError("File is not valid UTF-8 JSON.") from exc
+    if not isinstance(data, dict):
+        raise ValueError("Expected a JSON object at the top level.")
+    if "skus" not in data and "processed_keys" not in data:
+        raise ValueError(
+            "This does not look like an aggregates backup (missing skus or processed_keys)."
+        )
+
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open("w", encoding="utf-8") as f:
+        json.dump(data, f, indent=2, ensure_ascii=False)
+        f.write("\n")
+    return load_store(path)

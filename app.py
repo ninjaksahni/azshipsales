@@ -9,7 +9,7 @@ from src.constants import (
     SHIPMENT_REPORT_URL,
 )
 from src.coverage import coverage_calendar_html, coverage_summary_text
-from src.store import DEFAULT_DATA_PATH, reset_store
+from src.store import DEFAULT_DATA_PATH, reset_store, restore_store_from_bytes
 from src.store_cache import load_store_snapshot, store_mtime_ns
 from src.ui_main import render_main
 from src.upload_handler import (
@@ -110,6 +110,26 @@ Re-uploading newer exports is fine — overlapping orders are deduplicated autom
 
     st.divider()
     st.header("Data")
+    st.caption(
+        "Streamlit Cloud does not use your computer’s data file. After each deploy the server "
+        "starts empty unless you **restore a backup** or upload CSVs again."
+    )
+    backup = st.file_uploader(
+        "Restore aggregates.json",
+        type=["json"],
+        key="restore_aggregates_json",
+        help="Download this file from Settings on a machine where you already uploaded CSVs.",
+    )
+    if backup is not None:
+        try:
+            restore_store_from_bytes(backup.getvalue(), DATA_PATH)
+            clear_upload_session_keys()
+            _invalidate_store_cache()
+            st.success("Restored aggregates from backup.")
+            st.rerun()
+        except ValueError as exc:
+            st.error(str(exc))
+
     if st.button("Reset all stored data", type="secondary"):
         st.session_state[SESSION_CONFIRM_RESET] = True
 

@@ -18,7 +18,7 @@ streamlit run app.py
 
 Upload shipment CSV exports from Seller Central. Re-uploading overlapping reports is safe: rows are deduplicated by **Amazon Order Id + Merchant SKU**. Rows with **Product Amount = 0** are excluded.
 
-Aggregates are stored in `data/aggregates.json` (gitignored).
+Aggregates are stored in `data/aggregates.json` (gitignored). That file is **not** deployed to Streamlit Cloud; use **Settings → Download aggregates.json** locally, then **Restore aggregates.json** in the Cloud app sidebar (or re-upload CSVs). Cloud storage is also cleared when the app is redeployed.
 
 ## Metrics
 
