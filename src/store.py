@@ -39,6 +39,10 @@ def save_store(store: dict[str, Any], path: Path = DEFAULT_DATA_PATH) -> None:
         json.dump(store, f, indent=2, ensure_ascii=False)
         f.write("\n")
 
+    from src.store_sync import push_store_snapshot
+
+    push_store_snapshot(store, path)
+
 
 def ingest_rows(
     store: dict[str, Any],

@@ -9,8 +9,14 @@ from src.constants import (
     SHIPMENT_REPORT_URL,
 )
 from src.coverage import coverage_calendar_html, coverage_summary_text
-from src.store import DEFAULT_DATA_PATH, reset_store, restore_store_from_bytes
+from src.store import DEFAULT_DATA_PATH, reset_store
 from src.store_cache import load_store_snapshot, store_mtime_ns
+from src.store_sync import (
+    hydrate_local_store,
+    is_streamlit_cloud,
+    last_sync_error,
+    remote_store_enabled,
+)
 from src.ui_main import render_main
 from src.upload_handler import (
     clear_upload_session_keys,
@@ -37,7 +43,16 @@ def _cached_store(path_str: str, mtime_ns: int) -> dict:
     return load_store_snapshot(Path(path_str))
 
 
+def _ensure_remote_hydrated() -> None:
+    if st.session_state.get("_store_remote_hydrated"):
+        return
+    if hydrate_local_store(DATA_PATH):
+        _invalidate_store_cache()
+    st.session_state["_store_remote_hydrated"] = True
+
+
 def _get_store() -> dict:
+    _ensure_remote_hydrated()
     mtime = store_mtime_ns(DATA_PATH)
     return _cached_store(str(DATA_PATH), mtime)
 
@@ -110,25 +125,16 @@ Re-uploading newer exports is fine — overlapping orders are deduplicated autom
 
     st.divider()
     st.header("Data")
-    st.caption(
-        "Streamlit Cloud does not use your computer’s data file. After each deploy the server "
-        "starts empty unless you **restore a backup** or upload CSVs again."
-    )
-    backup = st.file_uploader(
-        "Restore aggregates.json",
-        type=["json"],
-        key="restore_aggregates_json",
-        help="Download this file from Settings on a machine where you already uploaded CSVs.",
-    )
-    if backup is not None:
-        try:
-            restore_store_from_bytes(backup.getvalue(), DATA_PATH)
-            clear_upload_session_keys()
-            _invalidate_store_cache()
-            st.success("Restored aggregates from backup.")
-            st.rerun()
-        except ValueError as exc:
-            st.error(str(exc))
+    if remote_store_enabled():
+        st.caption("Aggregates sync to GitHub automatically (survives Cloud redeploys).")
+    elif is_streamlit_cloud():
+        st.warning(
+            "Add **github_store** in the app’s Streamlit **Secrets** so uploads persist after "
+            "redeploy. See `.streamlit/secrets.toml.example` in the repo."
+        )
+    sync_err = last_sync_error()
+    if sync_err:
+        st.error(f"Could not sync aggregates: {sync_err}")
 
     if st.button("Reset all stored data", type="secondary"):
         st.session_state[SESSION_CONFIRM_RESET] = True

@@ -62,9 +62,7 @@ def render_main(store: dict[str, Any], data_path: Path) -> None:
     skus = store.get("skus", {})
     if not skus:
         st.info(
-            "No shipment data yet. In the sidebar, **upload CSV** reports from Seller Central, "
-            "or **restore aggregates.json** if you backed up data from another session "
-            "(for example your local app)."
+            "No shipment data yet. Upload **Shipment Sales** CSV reports from the sidebar."
         )
         return
 
