@@ -5,6 +5,7 @@ METRIC_REVENUE_LABEL = "Revenue (₹)"
 METRIC_OPTIONS = (METRIC_UNITS_LABEL, METRIC_REVENUE_LABEL)
 
 SESSION_AUTHENTICATED = "app_authenticated"
+SESSION_SELECTED_MONTHS = "selected_months"
 SESSION_UPLOAD_KEYS = "processed_upload_fingerprints"
 SESSION_CONFIRM_RESET = "confirm_reset"
 SESSION_METRIC = "rank_metric"

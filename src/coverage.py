@@ -115,26 +115,8 @@ def _month_labels(sorted_days: list[str]) -> list[str]:
     return seen
 
 
-def coverage_calendar_html(sales_by_day: dict[str, int]) -> str:
-    if not sales_by_day:
-        return ""
-
-    months: list[tuple[int, int]] = []
-    for day_str in sorted(sales_by_day.keys()):
-        d = _parse_day(day_str)
-        if not d:
-            continue
-        key = (d.year, d.month)
-        if key not in months:
-            months.append(key)
-
-    blocks: list[str] = []
-    max_count = max(sales_by_day.values()) if sales_by_day else 1
-
-    for year, month in months:
-        blocks.append(_month_grid_html(year, month, sales_by_day, max_count))
-
-    style = """
+def shipment_calendar_styles_html() -> str:
+    return """
     <style>
     .cov-wrap {
       font-family: sans-serif;
@@ -143,11 +125,6 @@ def coverage_calendar_html(sales_by_day: dict[str, int]) -> str:
       color: var(--text-color, #31333F);
     }
     .cov-month { margin-bottom: 10px; }
-    .cov-title {
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: #FFFFFF !important;
-    }
     .cov-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
     .cov-dow {
       text-align: center;
@@ -190,6 +167,51 @@ def coverage_calendar_html(sales_by_day: dict[str, int]) -> str:
       visibility: visible;
       opacity: 1;
     }
+    </style>
+    """
+
+
+def single_month_calendar_html(
+    year: int,
+    month: int,
+    sales_by_day: dict[str, int],
+    max_count: int | None = None,
+    *,
+    hide_title: bool = False,
+) -> str:
+    if max_count is None:
+        max_count = max(sales_by_day.values()) if sales_by_day else 1
+    return _month_grid_html(year, month, sales_by_day, max_count, hide_title=hide_title)
+
+
+def coverage_calendar_html(sales_by_day: dict[str, int]) -> str:
+    if not sales_by_day:
+        return ""
+
+    months: list[tuple[int, int]] = []
+    for day_str in sorted(sales_by_day.keys()):
+        d = _parse_day(day_str)
+        if not d:
+            continue
+        key = (d.year, d.month)
+        if key not in months:
+            months.append(key)
+
+    blocks: list[str] = []
+    max_count = max(sales_by_day.values()) if sales_by_day else 1
+
+    for year, month in months:
+        blocks.append(_month_grid_html(year, month, sales_by_day, max_count))
+
+    style = (
+        shipment_calendar_styles_html()
+        + """
+    <style>
+    .cov-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      color: #FFFFFF !important;
+    }
     .cov-legend {
       display: flex;
       align-items: center;
@@ -214,6 +236,7 @@ def coverage_calendar_html(sales_by_day: dict[str, int]) -> str:
     }
     </style>
     """
+    )
     legend = (
         '<div class="cov-legend">'
         '<span>Fewer</span>'
@@ -225,7 +248,12 @@ def coverage_calendar_html(sales_by_day: dict[str, int]) -> str:
 
 
 def _month_grid_html(
-    year: int, month: int, sales_by_day: dict[str, int], max_count: int
+    year: int,
+    month: int,
+    sales_by_day: dict[str, int],
+    max_count: int,
+    *,
+    hide_title: bool = False,
 ) -> str:
     title = date(year, month, 1).strftime("%B %Y")
     weeks = cal_mod.monthcalendar(year, month)
@@ -255,9 +283,14 @@ def _month_grid_html(
                     '<div class="cov-cell cov-empty" style="background:#FFFFFF;"></div>'
                 )
 
+    title_html = (
+        ""
+        if hide_title
+        else f'<div class="cov-title" style="color:#FFFFFF;">{escape(title)}</div>'
+    )
     return (
         f'<div class="cov-month">'
-        f'<div class="cov-title" style="color:#FFFFFF;">{escape(title)}</div>'
+        f"{title_html}"
         f'<div class="cov-grid">{header}{"".join(cells)}</div>'
         f"</div>"
     )

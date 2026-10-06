@@ -19,6 +19,7 @@ from src.store_sync import (
     last_sync_error,
     remote_store_enabled,
 )
+from src.month_filter import apply_month_filter, get_selected_months, render_month_filter_sidebar
 from src.ui_main import render_main
 from src.upload_handler import (
     clear_upload_session_keys,
@@ -112,6 +113,8 @@ Re-uploading newer exports is fine — overlapping orders are deduplicated autom
 
         store = _get_store()
 
+    render_month_filter_sidebar(store)
+
     st.divider()
     st.subheader("Shipment coverage")
     sales_by_day = store.get("sales_by_day", {})
@@ -159,4 +162,6 @@ Re-uploading newer exports is fine — overlapping orders are deduplicated autom
 with st.sidebar:
     render_sidebar()
 
-render_main(_get_store(), DATA_PATH)
+_store = _get_store()
+_view = apply_month_filter(_store, get_selected_months(_store))
+render_main(_view, DATA_PATH)
