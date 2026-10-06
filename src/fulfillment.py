@@ -19,6 +19,61 @@ def _sku_total(sku_data: dict[str, Any], metric: Metric) -> float:
     return float(sku_data.get("total_revenue_inr", 0.0))
 
 
+def _merge_place_bucket(into: dict[str, Any], bucket: dict[str, Any]) -> None:
+    into["quantity"] = int(into.get("quantity", 0)) + int(bucket.get("quantity", 0))
+    into["revenue_inr"] = float(into.get("revenue_inr", 0.0)) + float(
+        bucket.get("revenue_inr", 0.0)
+    )
+    if bucket.get("state") and not into.get("state"):
+        into["state"] = bucket["state"]
+    by_day = bucket.get("by_day")
+    if isinstance(by_day, dict):
+        merged_days: dict[str, int] = into.setdefault("by_day", {})
+        for day, qty in by_day.items():
+            merged_days[day] = int(merged_days.get(day, 0)) + int(qty)
+
+
+def merge_sku_records(skus: dict[str, Any], sku_names: list[str]) -> dict[str, Any]:
+    """Combine city/state rollups (and per-city timelines) for multiple SKUs."""
+    merged: dict[str, Any] = {
+        "total_quantity": 0,
+        "total_revenue_inr": 0.0,
+        "cities": {},
+        "states": {},
+    }
+    for name in sku_names:
+        data = skus.get(name)
+        if not data:
+            continue
+        merged["total_quantity"] += int(data.get("total_quantity", 0))
+        merged["total_revenue_inr"] += float(data.get("total_revenue_inr", 0.0))
+        for city, bucket in data.get("cities", {}).items():
+            if city not in merged["cities"]:
+                merged["cities"][city] = {
+                    "quantity": 0,
+                    "revenue_inr": 0.0,
+                }
+            _merge_place_bucket(merged["cities"][city], bucket)
+        for state, bucket in data.get("states", {}).items():
+            if state not in merged["states"]:
+                merged["states"][state] = {
+                    "quantity": 0,
+                    "revenue_inr": 0.0,
+                }
+            _merge_place_bucket(merged["states"][state], bucket)
+    return merged
+
+
+def format_sku_selection_label(sku_names: list[str]) -> str:
+    if not sku_names:
+        return "—"
+    if len(sku_names) == 1:
+        return sku_names[0]
+    if len(sku_names) == 2:
+        return f"{sku_names[0]} + {sku_names[1]}"
+    return f"{len(sku_names)} SKUs"
+
+
 def ranked_places_for_sku(
     sku_data: dict[str, Any],
     bucket_key: str,

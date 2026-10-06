@@ -11,7 +11,7 @@ from src.constants import (
     METRIC_UNITS_LABEL,
     SESSION_CITY,
     SESSION_METRIC,
-    SESSION_SKU,
+    SESSION_SKUS,
 )
 from src.fulfillment import (
     Metric,
@@ -22,6 +22,8 @@ from src.fulfillment import (
     filter_cities,
     format_hero_city_to_sku,
     format_hero_sku_to_city,
+    format_sku_selection_label,
+    merge_sku_records,
     places_table_df,
     ranked_places_for_sku,
     ranked_skus_for_city,
@@ -30,7 +32,7 @@ from src.fulfillment import (
     store_summary,
 )
 from src.session_prefs import get_metric
-from src.sku_selection import ensure_default_sku
+from src.sku_selection import ensure_default_skus, selected_skus
 from src.store_cache import store_to_json_bytes
 from src.ui_maps import render_maps_tab
 from src.ui_momentum import render_market_momentum
@@ -79,7 +81,7 @@ def render_main(store: dict[str, Any], data_path: Path) -> None:
         help="Units = best for fulfillment planning. Revenue = product amount in INR.",
     )
     metric: Metric = get_metric()
-    ensure_default_sku(skus, metric)
+    ensure_default_skus(skus, metric)
 
     tab_sku, tab_city, tab_maps = st.tabs(
         ["SKU → markets", "City → assortment", "Maps"]
@@ -108,20 +110,21 @@ def _render_sku_tab(skus: dict[str, Any], metric: Metric, store: dict[str, Any])
         column_config=_metric_column_config(metric),
     )
 
-    sku_list = ensure_default_sku(skus, metric)
+    sku_list = ensure_default_skus(skus, metric)
 
     st.markdown("##### Choose SKU")
-    sku_choice = st.pills(
+    st.caption("Click to select or deselect. Charts combine all selected products.")
+    st.pills(
         "Product (SKU)",
         options=sku_list,
-        selection_mode="single",
-        key=SESSION_SKU,
+        selection_mode="multi",
+        key=SESSION_SKUS,
         label_visibility="collapsed",
     )
-    if not sku_choice:
-        sku_choice = st.session_state.get(SESSION_SKU) or fallback
+    sku_choices = selected_skus(skus, metric)
+    sku_label = format_sku_selection_label(sku_choices)
 
-    rec = skus[sku_choice]
+    rec = merge_sku_records(skus, sku_choices)
     ranked_cities = ranked_places_for_sku(rec, "cities", metric)
 
     st.markdown("##### Fulfillment priority")
@@ -129,7 +132,7 @@ def _render_sku_tab(skus: dict[str, Any], metric: Metric, store: dict[str, Any])
         top = ranked_cities[0]
         st.success(
             format_hero_sku_to_city(
-                sku_choice,
+                sku_label,
                 top["name"],
                 top["value"],
                 top["share_pct"],
@@ -137,9 +140,9 @@ def _render_sku_tab(skus: dict[str, Any], metric: Metric, store: dict[str, Any])
             )
         )
     else:
-        st.warning(f"No city data for **{sku_choice}** yet.")
+        st.warning(f"No city data for **{sku_label}** yet.")
 
-    st.markdown("##### Priority markets for this SKU")
+    st.markdown("##### Priority markets for selected SKU(s)")
     city_df = places_table_df(
         ranked_places_for_sku(rec, "cities", metric, limit=10),
         metric,
@@ -161,7 +164,7 @@ def _render_sku_tab(skus: dict[str, Any], metric: Metric, store: dict[str, Any])
             st.caption("No chart data.")
 
     priority_cities = city_df["City"].tolist() if not city_df.empty else []
-    render_market_momentum(sku_choice, rec, store, priority_cities)
+    render_market_momentum(sku_label, rec, store, priority_cities)
 
     with st.expander("By state (secondary)"):
         state_ranked = ranked_places_for_sku(rec, "states", metric, limit=10)

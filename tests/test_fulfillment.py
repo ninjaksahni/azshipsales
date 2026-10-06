@@ -5,6 +5,7 @@ import unittest
 from src.fulfillment import (
     build_city_index,
     filter_cities,
+    merge_sku_records,
     ranked_places_for_sku,
     ranked_skus_for_city,
     skus_sorted,
@@ -50,6 +51,14 @@ class FulfillmentTests(unittest.TestCase):
 
     def test_skus_sorted(self) -> None:
         self.assertEqual(skus_sorted(self.skus, "units")[0], "A")
+
+    def test_merge_sku_records(self) -> None:
+        merged = merge_sku_records(self.skus, ["A", "B"])
+        self.assertEqual(merged["total_quantity"], 15)
+        self.assertEqual(merged["cities"]["MUMBAI"]["quantity"], 11)
+        ranked = ranked_places_for_sku(merged, "cities", "units")
+        self.assertEqual(ranked[0]["name"], "MUMBAI")
+        self.assertEqual(ranked[0]["share_pct"], round(11 / 15 * 100, 1))
 
 
 if __name__ == "__main__":
