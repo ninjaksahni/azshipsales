@@ -138,12 +138,17 @@ def _set_month_selection(months: list[str], selected: list[str]) -> None:
 
 
 def render_month_filter_sidebar(store: dict[str, Any]) -> None:
-    months = month_keys_from_store(store)
-    if not months:
-        return
-
     st.divider()
     st.subheader("Months in view")
+
+    months = month_keys_from_store(store)
+    if not months:
+        st.caption(
+            "Upload shipment CSVs to see monthly calendars here. "
+            "Check months to include in charts and tables."
+        )
+        return
+
     st.caption("Charts and tables use only checked months. Default: all recorded months.")
 
     selected = set(get_selected_months(store))

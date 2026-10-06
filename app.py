@@ -9,7 +9,6 @@ from src.constants import (
     SESSION_CONFIRM_RESET,
     SHIPMENT_REPORT_URL,
 )
-from src.coverage import coverage_calendar_html, coverage_summary_text
 from src.store import DEFAULT_DATA_PATH, reset_store
 from src.store_cache import load_store_snapshot, store_mtime_ns
 from src.paths import GEOCODE_CACHE_PATH
@@ -114,21 +113,6 @@ Re-uploading newer exports is fine — overlapping orders are deduplicated autom
         store = _get_store()
 
     render_month_filter_sidebar(store)
-
-    st.divider()
-    st.subheader("Shipment coverage")
-    sales_by_day = store.get("sales_by_day", {})
-    st.markdown(coverage_summary_text(sales_by_day))
-    calendar_html = coverage_calendar_html(sales_by_day)
-    if calendar_html:
-        st.markdown(calendar_html, unsafe_allow_html=True)
-    elif store.get("uploads"):
-        st.caption(
-            "Upload a shipment CSV again to fill the calendar. "
-            "SKU totals stay deduplicated; only missing dates are added."
-        )
-    else:
-        st.caption("Days with shipments appear highlighted once you upload data.")
 
     st.divider()
     st.header("Data")
