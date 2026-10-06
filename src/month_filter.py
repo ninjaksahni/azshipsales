@@ -191,9 +191,7 @@ def render_month_filter_sidebar(store: dict[str, Any]) -> None:
         _set_month_selection(months, [months[-1]])
         st.rerun()
 
-    summary = selected_view_summary_text(sales_by_day, list(selected))
-    if summary:
-        st.markdown(summary)
+    summary_slot = st.empty()
 
     st.markdown(shipment_calendar_styles_html(), unsafe_allow_html=True)
 
@@ -220,3 +218,7 @@ def render_month_filter_sidebar(store: dict[str, Any]) -> None:
     if not new_selected:
         new_selected = months
     st.session_state[SESSION_SELECTED_MONTHS] = new_selected
+
+    summary = selected_view_summary_text(sales_by_day, new_selected)
+    if summary:
+        summary_slot.markdown(summary)
