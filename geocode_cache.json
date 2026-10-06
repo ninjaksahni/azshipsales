@@ -1,0 +1,1113 @@
+{
+  "DOMBIVALI EAST": {
+    "lat": 19.2149794,
+    "lon": 73.1108896,
+    "source": "api",
+    "city": "DOMBIVALI EAST",
+    "state": "MAHARASHTRA"
+  },
+  "PAITHAN": {
+    "lat": 19.47506,
+    "lon": 75.38558,
+    "source": "api",
+    "city": "PAITHAN",
+    "state": "MAHARASHTRA"
+  },
+  "JAYGAON": {
+    "lat": 19.0228086,
+    "lon": 76.3199723,
+    "source": "api",
+    "city": "JAYGAON",
+    "state": "WEST BENGAL"
+  },
+  "HAILAKANDI": {
+    "lat": 24.68394,
+    "lon": 92.56097,
+    "source": "api",
+    "city": "HAILAKANDI",
+    "state": "ASSAM"
+  },
+  "CHEEKA": {
+    "lat": 30.04891,
+    "lon": 76.343,
+    "source": "api",
+    "city": "CHEEKA",
+    "state": "HARYANA"
+  },
+  "NASHIK": {
+    "lat": 19.99727,
+    "lon": 73.79096,
+    "source": "api",
+    "city": "NASHIK",
+    "state": "MAHARASHTRA"
+  },
+  "PORVORIM": {
+    "lat": 15.5251356,
+    "lon": 73.828272,
+    "source": "api",
+    "city": "PORVORIM",
+    "state": "GOA"
+  },
+  "GAUTAM BUDDHA NAGAR": {
+    "lat": 28.368716,
+    "lon": 77.5970121,
+    "source": "api",
+    "city": "GAUTAM BUDDHA NAGAR",
+    "state": "UTTAR PRADESH"
+  },
+  "VAKATHANAM KOTTAYAM": {
+    "lat": 9.5173224,
+    "lon": 76.5719694,
+    "source": "api",
+    "city": "VAKATHANAM, KOTTAYAM",
+    "state": "KERALA"
+  },
+  "MATHURA": {
+    "lat": 27.5035,
+    "lon": 77.67215,
+    "source": "api",
+    "city": "MATHURA",
+    "state": "UTTAR PRADESH"
+  },
+  "LUCKNOW": {
+    "lat": 26.83928,
+    "lon": 80.92313,
+    "source": "api",
+    "city": "LUCKNOW",
+    "state": "UTTAR PRADESH"
+  },
+  "MADURAI": {
+    "lat": 9.919,
+    "lon": 78.11953,
+    "source": "api",
+    "city": "MADURAI",
+    "state": "TAMIL NADU"
+  },
+  "PITAMPURA": {
+    "lat": 28.68964,
+    "lon": 77.13126,
+    "source": "api",
+    "city": "PITAMPURA",
+    "state": "DELHI"
+  },
+  "PIDUGURALLA": {
+    "lat": 16.47926,
+    "lon": 79.88632,
+    "source": "api",
+    "city": "PIDUGURALLA",
+    "state": "ANDHRA PRADESH"
+  },
+  "ATHIYANNUR": {
+    "lat": 8.393,
+    "lon": 77.06371,
+    "source": "api",
+    "city": "ATHIYANNUR",
+    "state": "KERALA"
+  },
+  "SHRIRAMPUR": {
+    "lat": 19.62201,
+    "lon": 74.65699,
+    "source": "api",
+    "city": "SHRIRAMPUR",
+    "state": "MAHARASHTRA"
+  },
+  "BISHNUPUR BIRBHUM DISTRICT": {
+    "failed": true,
+    "city": "BISHNUPUR BIRBHUM DISTRICT",
+    "state": "WEST BENGAL"
+  },
+  "PAPUM PARENAHARLAGUN": {
+    "lat": 27.0997063,
+    "lon": 93.6248362,
+    "source": "api",
+    "city": "PAPUM PARE,NAHARLAGUN",
+    "state": "ARUNACHAL PRADESH"
+  },
+  "TIRUVARUR": {
+    "lat": 10.77269,
+    "lon": 79.6368,
+    "source": "api",
+    "city": "TIRUVARUR",
+    "state": "TAMIL NADU"
+  },
+  "KOHIMA": {
+    "lat": 25.67467,
+    "lon": 94.11099,
+    "source": "api",
+    "city": "KOHIMA",
+    "state": "NAGALAND"
+  },
+  "BIRPARA": {
+    "lat": 26.70421,
+    "lon": 89.14547,
+    "source": "api",
+    "city": "BIRPARA",
+    "state": "WEST BENGAL"
+  },
+  "KOCHI": {
+    "lat": 9.93988,
+    "lon": 76.26022,
+    "source": "api",
+    "city": "KOCHI",
+    "state": "KERALA"
+  },
+  "AGRA": {
+    "lat": 27.18333,
+    "lon": 78.01667,
+    "source": "api",
+    "city": "AGRA",
+    "state": "UTTAR PRADESH"
+  },
+  "MAHINDRA WORLD CITY": {
+    "lat": 12.7342024,
+    "lon": 80.0113801,
+    "source": "api",
+    "city": "MAHINDRA WORLD CITY",
+    "state": "TAMIL NADU"
+  },
+  "PANCHGANI": {
+    "lat": 17.92449,
+    "lon": 73.8008,
+    "source": "api",
+    "city": "PANCHGANI",
+    "state": "MAHARASHTRA"
+  },
+  "KURUKSHETRA": {
+    "lat": 29.9657,
+    "lon": 76.837,
+    "source": "api",
+    "city": "KURUKSHETRA",
+    "state": "HARYANA"
+  },
+  "FIROZEPUR": {
+    "failed": true,
+    "city": "FIROZEPUR",
+    "state": "PUNJAB"
+  },
+  "CUDDALORE": {
+    "lat": 11.75617,
+    "lon": 79.76693,
+    "source": "api",
+    "city": "CUDDALORE",
+    "state": "TAMIL NADU"
+  },
+  "FATEHNAGAR": {
+    "lat": 24.81494,
+    "lon": 74.09504,
+    "source": "api",
+    "city": "FATEHNAGAR",
+    "state": "RAJASTHAN"
+  },
+  "KASARAGOD": {
+    "lat": 12.49838,
+    "lon": 74.98959,
+    "source": "api",
+    "city": "KASARAGOD",
+    "state": "KERALA"
+  },
+  "ORAGADAM INDUSTRIAL AREA": {
+    "lat": 12.8410187,
+    "lon": 79.9494965,
+    "source": "api",
+    "city": "ORAGADAM INDUSTRIAL AREA",
+    "state": "TN"
+  },
+  "SARSAWAN": {
+    "lat": 27.78049,
+    "lon": 78.79337,
+    "source": "api",
+    "city": "SARSAWAN",
+    "state": "UTTAR PRADESH"
+  },
+  "MADLAUDA": {
+    "lat": 29.40085,
+    "lon": 76.00741,
+    "source": "api",
+    "city": "MADLAUDA",
+    "state": "HARYANA"
+  },
+  "PUDUPAKKAM": {
+    "lat": 12.9194,
+    "lon": 79.67171,
+    "source": "api",
+    "city": "PUDUPAKKAM",
+    "state": "TAMIL NADU"
+  },
+  "VISKHAPATNAM": {
+    "failed": true,
+    "city": "VISKHAPATNAM",
+    "state": "ANDHRA PRADESH"
+  },
+  "BIKANER": {
+    "lat": 28.01762,
+    "lon": 73.31495,
+    "source": "api",
+    "city": "BIKANER",
+    "state": "RAJASTHAN"
+  },
+  "KANPUR": {
+    "lat": 26.46523,
+    "lon": 80.34975,
+    "source": "api",
+    "city": "KANPUR",
+    "state": "UTTAR PRADESH"
+  },
+  "TIRUCHIRAPPALLI": {
+    "lat": 10.8155,
+    "lon": 78.69651,
+    "source": "api",
+    "city": "TIRUCHIRAPPALLI",
+    "state": "TAMIL NADU"
+  },
+  "BARSHITAKLI": {
+    "lat": 20.522587,
+    "lon": 77.1579595,
+    "source": "api",
+    "city": "BARSHITAKLI",
+    "state": "MAHARASHTRA"
+  },
+  "KAMBAM": {
+    "lat": 9.73647,
+    "lon": 77.2847,
+    "source": "api",
+    "city": "KAMBAM",
+    "state": "TAMIL NADU"
+  },
+  "JHANSI": {
+    "lat": 25.45887,
+    "lon": 78.57994,
+    "source": "api",
+    "city": "JHANSI",
+    "state": "UTTAR PRADESH"
+  },
+  "BARAMATI PUNE": {
+    "lat": 18.2198538,
+    "lon": 74.4534054,
+    "source": "api",
+    "city": "BARAMATI, PUNE",
+    "state": "MAHARASHTRA"
+  },
+  "SANT RAVIDAS NAGAR  BHADOHI": {
+    "lat": 25.3627897,
+    "lon": 82.6846939,
+    "source": "api",
+    "city": "SANT RAVIDAS NAGAR - BHADOHI",
+    "state": "UTTAR PRADESH"
+  },
+  "EDUPUGALLU": {
+    "lat": 16.4606571,
+    "lon": 80.7544469,
+    "source": "api",
+    "city": "EDUPUGALLU",
+    "state": "ANDHRA PRADESH"
+  },
+  "LUXETTIPET": {
+    "lat": 19.3965422,
+    "lon": 78.7710285,
+    "source": "api",
+    "city": "LUXETTIPET",
+    "state": "TELANGANA"
+  },
+  "KALABURGI": {
+    "lat": 16.8999182,
+    "lon": 77.0567566,
+    "source": "api",
+    "city": "KALABURGI",
+    "state": "KARNATAKA"
+  },
+  "ROHTAK": {
+    "lat": 28.89447,
+    "lon": 76.58917,
+    "source": "api",
+    "city": "ROHTAK",
+    "state": "HARYANA"
+  },
+  "VASAI VIRAR": {
+    "lat": 19.4210423,
+    "lon": 72.8197221,
+    "source": "api",
+    "city": "VASAI VIRAR",
+    "state": "MAHARASHTRA"
+  },
+  "KHANNA": {
+    "lat": 30.70547,
+    "lon": 76.22196,
+    "source": "api",
+    "city": "KHANNA",
+    "state": "PUNJAB"
+  },
+  "AMRITSAR": {
+    "lat": 31.62234,
+    "lon": 74.87534,
+    "source": "api",
+    "city": "AMRITSAR",
+    "state": "PUNJAB"
+  },
+  "RAJARHAT": {
+    "lat": 22.6020231,
+    "lon": 88.4779972,
+    "source": "api",
+    "city": "RAJARHAT",
+    "state": "WEST BENGAL"
+  },
+  "THIRUVALLUR": {
+    "lat": 13.2537619,
+    "lon": 80.0562572,
+    "source": "api",
+    "city": "THIRUVALLUR",
+    "state": "TAMIL NADU"
+  },
+  "JALGAON": {
+    "lat": 21.00292,
+    "lon": 75.56602,
+    "source": "api",
+    "city": "JALGAON",
+    "state": "MAHARASHTRA"
+  },
+  "HOJAI": {
+    "lat": 26.00281,
+    "lon": 92.85605,
+    "source": "api",
+    "city": "HOJAI",
+    "state": "ASSAM"
+  },
+  "MIRZAPUR CUM VINDHYACHAL": {
+    "failed": true,
+    "city": "MIRZAPUR CUM VINDHYACHAL",
+    "state": "UTTAR PRADESH"
+  },
+  "ALIBAG": {
+    "lat": 18.64813,
+    "lon": 72.87579,
+    "source": "api",
+    "city": "ALIBAG",
+    "state": "MAHARASHTRA"
+  },
+  "FARIDABAD": {
+    "lat": 28.41124,
+    "lon": 77.31316,
+    "source": "api",
+    "city": "FARIDABAD",
+    "state": "HARYANA"
+  },
+  "BARAMATI": {
+    "lat": 18.15174,
+    "lon": 74.57767,
+    "source": "api",
+    "city": "BARAMATI",
+    "state": "MAHARASHTRA"
+  },
+  "VARANASI": {
+    "lat": 25.31668,
+    "lon": 83.01041,
+    "source": "api",
+    "city": "VARANASI",
+    "state": "UTTAR PRADESH"
+  },
+  "SHIMLA": {
+    "lat": 31.10442,
+    "lon": 77.16662,
+    "source": "api",
+    "city": "SHIMLA",
+    "state": "HIMACHAL PRADESH"
+  },
+  "ASANSOL": {
+    "lat": 23.68333,
+    "lon": 86.98333,
+    "source": "api",
+    "city": "ASANSOL",
+    "state": "WEST BENGAL"
+  },
+  "GANDHIDHAM": {
+    "lat": 23.08333,
+    "lon": 70.13333,
+    "source": "api",
+    "city": "GANDHIDHAM",
+    "state": "GUJARAT"
+  },
+  "MYSURU": {
+    "lat": 12.29791,
+    "lon": 76.63925,
+    "source": "api",
+    "city": "MYSURU",
+    "state": "KARNATAKA"
+  },
+  "UMBERGAON": {
+    "lat": 20.16915,
+    "lon": 72.77502,
+    "source": "api",
+    "city": "UMBERGAON",
+    "state": "GUJARAT"
+  },
+  "DUNGARPUR": {
+    "lat": 23.84306,
+    "lon": 73.71466,
+    "source": "api",
+    "city": "DUNGARPUR",
+    "state": "RAJASTHAN"
+  },
+  "DAMAN": {
+    "lat": 20.41431,
+    "lon": 72.83236,
+    "source": "api",
+    "city": "DAMAN",
+    "state": "DAMAN & DIU"
+  },
+  "PATNA": {
+    "lat": 25.59408,
+    "lon": 85.13563,
+    "source": "api",
+    "city": "PATNA",
+    "state": "BIHAR"
+  },
+  "BILASPUR": {
+    "lat": 22.08005,
+    "lon": 82.15543,
+    "source": "api",
+    "city": "BILASPUR",
+    "state": "CHHATTISGARH"
+  },
+  "USILAMPATTI": {
+    "lat": 9.96936,
+    "lon": 77.78621,
+    "source": "api",
+    "city": "USILAMPATTI",
+    "state": "TAMIL NADU"
+  },
+  "GANDHINAGAR": {
+    "lat": 23.21667,
+    "lon": 72.68333,
+    "source": "api",
+    "city": "GANDHINAGAR",
+    "state": "GUJARAT"
+  },
+  "KHANDWA": {
+    "lat": 21.82427,
+    "lon": 76.35086,
+    "source": "api",
+    "city": "KHANDWA",
+    "state": "MADHYA PRADESH"
+  },
+  "TARIKERE": {
+    "lat": 13.70954,
+    "lon": 75.81382,
+    "source": "api",
+    "city": "TARIKERE",
+    "state": "KARNATAKA"
+  },
+  "SINGRAULI": {
+    "lat": 24.19973,
+    "lon": 82.67535,
+    "source": "api",
+    "city": "SINGRAULI",
+    "state": "MADHYA PRADESH"
+  },
+  "CUTTACK": {
+    "lat": 20.46497,
+    "lon": 85.87927,
+    "source": "api",
+    "city": "CUTTACK",
+    "state": "ODISHA"
+  },
+  "PONDA": {
+    "lat": 15.40341,
+    "lon": 74.01519,
+    "source": "api",
+    "city": "PONDA",
+    "state": "GOA"
+  },
+  "BELGAUM": {
+    "lat": 15.85929,
+    "lon": 74.61829,
+    "source": "api",
+    "city": "BELGAUM",
+    "state": "KARNATAKA"
+  },
+  "JAMMU": {
+    "lat": 32.73528,
+    "lon": 74.86167,
+    "source": "api",
+    "city": "JAMMU",
+    "state": "JAMMU & KASHMIR"
+  },
+  "VASCO DA GAMA": {
+    "lat": 15.39585,
+    "lon": 73.81568,
+    "source": "api",
+    "city": "VASCO DA GAMA",
+    "state": "GOA"
+  },
+  "MAPUSA": {
+    "lat": 15.59154,
+    "lon": 73.80898,
+    "source": "api",
+    "city": "MAPUSA",
+    "state": "GOA"
+  },
+  "THALASSERY": {
+    "lat": 11.74811,
+    "lon": 75.4929,
+    "source": "api",
+    "city": "THALASSERY",
+    "state": "KERALA"
+  },
+  "CHAKAN": {
+    "lat": 18.76059,
+    "lon": 73.86351,
+    "source": "api",
+    "city": "CHAKAN",
+    "state": "MAHARASHTRA"
+  },
+  "DARBHANGA": {
+    "lat": 26.15216,
+    "lon": 85.89707,
+    "source": "api",
+    "city": "DARBHANGA",
+    "state": "BIHAR"
+  },
+  "JAMNAGAR": {
+    "lat": 22.47292,
+    "lon": 70.06673,
+    "source": "api",
+    "city": "JAMNAGAR",
+    "state": "GUJARAT"
+  },
+  "CHEMBARACKY BH NAGAR": {
+    "failed": true,
+    "city": "CHEMBARACKY ,BH NAGAR",
+    "state": "KERALA"
+  },
+  "NANDI": {
+    "lat": 13.64259,
+    "lon": 75.85641,
+    "source": "api",
+    "city": "NANDI",
+    "state": "KARNATAKA"
+  },
+  "MUVATTUPUZHA": {
+    "lat": 9.97985,
+    "lon": 76.57381,
+    "source": "api",
+    "city": "MUVATTUPUZHA",
+    "state": "KERALA"
+  },
+  "RANIPETTAI": {
+    "lat": 12.9292452,
+    "lon": 79.3321712,
+    "source": "api",
+    "city": "RANIPETTAI",
+    "state": "TAMIL NADU"
+  },
+  "ASSAGAO": {
+    "lat": 15.60287,
+    "lon": 73.75949,
+    "source": "api",
+    "city": "ASSAGAO",
+    "state": "GOA"
+  },
+  "KOLHAPUR": {
+    "lat": 16.69563,
+    "lon": 74.23167,
+    "source": "api",
+    "city": "KOLHAPUR",
+    "state": "MAHARASHTRA"
+  },
+  "MAINPURI": {
+    "lat": 27.22857,
+    "lon": 79.02882,
+    "source": "api",
+    "city": "MAINPURI",
+    "state": "UTTAR PRADESH"
+  },
+  "MAVELIKKARA": {
+    "lat": 9.25929,
+    "lon": 76.55642,
+    "source": "api",
+    "city": "MAVELIKKARA",
+    "state": "KERALA"
+  },
+  "KHAMMAM": {
+    "lat": 17.24767,
+    "lon": 80.14368,
+    "source": "api",
+    "city": "KHAMMAM",
+    "state": "TELANGANA"
+  },
+  "REWARI": {
+    "lat": 28.199,
+    "lon": 76.6183,
+    "source": "api",
+    "city": "REWARI",
+    "state": "HARYANA"
+  },
+  "BHOPAL": {
+    "lat": 23.25469,
+    "lon": 77.40289,
+    "source": "api",
+    "city": "BHOPAL",
+    "state": "MADHYA PRADESH"
+  },
+  "GUDIPALA": {
+    "lat": 13.08788,
+    "lon": 79.1145,
+    "source": "api",
+    "city": "GUDIPALA",
+    "state": "ANDHRA PRADESH"
+  },
+  "JABALPUR": {
+    "lat": 23.16697,
+    "lon": 79.95006,
+    "source": "api",
+    "city": "JABALPUR",
+    "state": "MADHYA PRADESH"
+  },
+  "SAGAR": {
+    "lat": 23.83877,
+    "lon": 78.73874,
+    "source": "api",
+    "city": "SAGAR",
+    "state": "MADHYA PRADESH"
+  },
+  "GUNTUR": {
+    "lat": 16.29974,
+    "lon": 80.45729,
+    "source": "api",
+    "city": "GUNTUR",
+    "state": "ANDHRA PRADESH"
+  },
+  "VRINDAVAN": {
+    "lat": 27.58105,
+    "lon": 77.69662,
+    "source": "api",
+    "city": "VRINDAVAN",
+    "state": "UTTAR PRADESH"
+  },
+  "RAIPUR": {
+    "lat": 21.23333,
+    "lon": 81.63333,
+    "source": "api",
+    "city": "RAIPUR",
+    "state": "CHHATTISGARH"
+  },
+  "NELLORE": {
+    "lat": 14.44992,
+    "lon": 79.98697,
+    "source": "api",
+    "city": "NELLORE",
+    "state": "ANDHRA PRADESH"
+  },
+  "PARVATHIPURAM": {
+    "lat": 15.60046,
+    "lon": 79.63292,
+    "source": "api",
+    "city": "PARVATHIPURAM",
+    "state": "ANDHRA PRADESH"
+  },
+  "BEGUSARAI": {
+    "lat": 25.41853,
+    "lon": 86.13389,
+    "source": "api",
+    "city": "BEGUSARAI",
+    "state": "BIHAR"
+  },
+  "RAIGADULWENAVI MUMBAI": {
+    "lat": 18.9913513,
+    "lon": 73.0657484,
+    "source": "api",
+    "city": "RAIGAD,ULWE,NAVI MUMBAI",
+    "state": "MAHARASHTRA"
+  },
+  "HAMIRPUR": {
+    "lat": 31.68411,
+    "lon": 76.52506,
+    "source": "api",
+    "city": "HAMIRPUR",
+    "state": "HIMACHAL PRADESH"
+  },
+  "HAVERI": {
+    "lat": 14.79354,
+    "lon": 75.40448,
+    "source": "api",
+    "city": "HAVERI",
+    "state": "KARNATAKA"
+  },
+  "PUNALUR": {
+    "lat": 9.01956,
+    "lon": 76.92261,
+    "source": "api",
+    "city": "PUNALUR",
+    "state": "KERALA"
+  },
+  "SRIPERUMBUDUR": {
+    "lat": 12.96763,
+    "lon": 79.94197,
+    "source": "api",
+    "city": "SRIPERUMBUDUR",
+    "state": "TAMIL NADU"
+  },
+  "BURHAR": {
+    "lat": 23.21494,
+    "lon": 81.53204,
+    "source": "api",
+    "city": "BURHAR",
+    "state": "MADHYA PRADESH"
+  },
+  "MANANTHAWADY WAYANAD": {
+    "failed": true,
+    "city": "MANANTHAWADY WAYANAD",
+    "state": "KERALA"
+  },
+  "TIRUPPUR": {
+    "lat": 11.11541,
+    "lon": 77.35456,
+    "source": "api",
+    "city": "TIRUPPUR",
+    "state": "TAMIL NADU"
+  },
+  "NUAPADA": {
+    "lat": 20.8167,
+    "lon": 82.5333,
+    "source": "api",
+    "city": "NUAPADA",
+    "state": "OR"
+  },
+  "KHARAGPUR": {
+    "lat": 22.33971,
+    "lon": 87.32501,
+    "source": "api",
+    "city": "KHARAGPUR",
+    "state": "WEST BENGAL"
+  },
+  "HALDWANI NAINITAL": {
+    "lat": 29.2273322,
+    "lon": 79.4207443,
+    "source": "api",
+    "city": "HALDWANI (NAINITAL)",
+    "state": "UTTARAKHAND"
+  },
+  "BHILAI": {
+    "lat": 21.20919,
+    "lon": 81.4285,
+    "source": "api",
+    "city": "BHILAI",
+    "state": "CHHATTISGARH"
+  },
+  "NABADWIP": {
+    "lat": 23.4067,
+    "lon": 88.36861,
+    "source": "api",
+    "city": "NABADWIP",
+    "state": "WEST BENGAL"
+  },
+  "TIRUPATI": {
+    "lat": 13.63551,
+    "lon": 79.41989,
+    "source": "api",
+    "city": "TIRUPATI",
+    "state": "ANDHRA PRADESH"
+  },
+  "AMRAVATI": {
+    "lat": 20.93333,
+    "lon": 77.75,
+    "source": "api",
+    "city": "AMRAVATI",
+    "state": "MAHARASHTRA"
+  },
+  "RAJAPALAYAM VIRUDHUNAGAR DISTRICT": {
+    "lat": 9.4031584,
+    "lon": 77.5182644,
+    "source": "api",
+    "city": "RAJAPALAYAM VIRUDHUNAGAR DISTRICT",
+    "state": "TAMIL NADU"
+  },
+  "BAHRAICH": {
+    "lat": 27.57429,
+    "lon": 81.59474,
+    "source": "api",
+    "city": "BAHRAICH",
+    "state": "UTTAR PRADESH"
+  },
+  "BHARUCH": {
+    "lat": 21.69482,
+    "lon": 72.9805,
+    "source": "api",
+    "city": "BHARUCH",
+    "state": "GUJARAT"
+  },
+  "ZIRAKPUR": {
+    "lat": 30.65622,
+    "lon": 76.82093,
+    "source": "api",
+    "city": "ZIRAKPUR",
+    "state": "PUNJAB"
+  },
+  "KANCHIPURAM": {
+    "lat": 12.83515,
+    "lon": 79.70006,
+    "source": "api",
+    "city": "KANCHIPURAM",
+    "state": "TAMIL NADU"
+  },
+  "BOLPUR": {
+    "lat": 23.66278,
+    "lon": 87.69695,
+    "source": "api",
+    "city": "BOLPUR",
+    "state": "WEST BENGAL"
+  },
+  "THANJAVUR": {
+    "lat": 10.78523,
+    "lon": 79.13909,
+    "source": "api",
+    "city": "THANJAVUR",
+    "state": "TAMIL NADU"
+  },
+  "VIJAYAWADA": {
+    "lat": 16.50745,
+    "lon": 80.6466,
+    "source": "api",
+    "city": "VIJAYAWADA",
+    "state": "ANDHRA PRADESH"
+  },
+  "VIRAR WEST": {
+    "lat": 19.4533576,
+    "lon": 72.8057966,
+    "source": "api",
+    "city": "VIRAR WEST",
+    "state": "MAHARASHTRA"
+  },
+  "KOVILPATTI": {
+    "lat": 9.17167,
+    "lon": 77.86989,
+    "source": "api",
+    "city": "KOVILPATTI",
+    "state": "TAMIL NADU"
+  },
+  "RAE BARELI": {
+    "lat": 26.2309,
+    "lon": 81.23315,
+    "source": "api",
+    "city": "RAE BARELI",
+    "state": "UTTAR PRADESH"
+  },
+  "KUNDARA": {
+    "lat": 8.96704,
+    "lon": 76.68923,
+    "source": "api",
+    "city": "KUNDARA",
+    "state": "KERALA"
+  },
+  "VELLORE": {
+    "lat": 12.9184,
+    "lon": 79.13255,
+    "source": "api",
+    "city": "VELLORE",
+    "state": "TAMIL NADU"
+  },
+  "LEH": {
+    "lat": 34.16504,
+    "lon": 77.58402,
+    "source": "api",
+    "city": "LEH",
+    "state": "LADAKH"
+  },
+  "KOZHIKODE": {
+    "lat": 11.24802,
+    "lon": 75.7804,
+    "source": "api",
+    "city": "KOZHIKODE",
+    "state": "KERALA"
+  },
+  "MANGALORE": {
+    "lat": 12.84654,
+    "lon": 74.84056,
+    "source": "api",
+    "city": "MANGALORE",
+    "state": "KARNATAKA"
+  },
+  "PATHANAMTHITTA": {
+    "lat": 9.26667,
+    "lon": 76.78333,
+    "source": "api",
+    "city": "PATHANAMTHITTA",
+    "state": "KERALA"
+  },
+  "MANGALAGIRI": {
+    "lat": 16.43083,
+    "lon": 80.56815,
+    "source": "api",
+    "city": "MANGALAGIRI",
+    "state": "ANDHRA PRADESH"
+  },
+  "CHAUMUHAN": {
+    "lat": 27.62295,
+    "lon": 77.58224,
+    "source": "api",
+    "city": "CHAUMUHAN",
+    "state": "UTTAR PRADESH"
+  },
+  "BALLARI": {
+    "lat": 15.14205,
+    "lon": 76.92398,
+    "source": "api",
+    "city": "BALLARI",
+    "state": "KARNATAKA"
+  },
+  "FIROZABAD": {
+    "lat": 27.15092,
+    "lon": 78.39781,
+    "source": "api",
+    "city": "FIROZABAD",
+    "state": "UTTAR PRADESH"
+  },
+  "DEVANAHALLI": {
+    "lat": 13.24655,
+    "lon": 77.71183,
+    "source": "api",
+    "city": "DEVANAHALLI",
+    "state": "KARNATAKA"
+  },
+  "KANCHEEPURAM": {
+    "lat": 12.8796052,
+    "lon": 79.7042762,
+    "source": "api",
+    "city": "KANCHEEPURAM",
+    "state": "TAMIL NADU"
+  },
+  "TINDIVANAM": {
+    "lat": 12.234,
+    "lon": 79.65551,
+    "source": "api",
+    "city": "TINDIVANAM",
+    "state": "TAMIL NADU"
+  },
+  "JAMSHEDPUR": {
+    "lat": 22.80278,
+    "lon": 86.18545,
+    "source": "api",
+    "city": "JAMSHEDPUR",
+    "state": "JHARKHAND"
+  },
+  "MEHRAULI": {
+    "lat": 28.51997,
+    "lon": 77.18031,
+    "source": "api",
+    "city": "MEHRAULI",
+    "state": "DELHI"
+  },
+  "NANDIVARAM GUDUVANCHERI": {
+    "failed": true,
+    "city": "NANDIVARAM GUDUVANCHERI",
+    "state": "TAMIL NADU"
+  },
+  "TALEGAON DABHADE": {
+    "lat": 18.73502,
+    "lon": 73.67561,
+    "source": "api",
+    "city": "TALEGAON DABHADE",
+    "state": "MAHARASHTRA"
+  },
+  "MALDA": {
+    "lat": 25.00447,
+    "lon": 88.14573,
+    "source": "api",
+    "city": "MALDA",
+    "state": "WEST BENGAL"
+  },
+  "KURNOOL": {
+    "lat": 15.82887,
+    "lon": 78.03602,
+    "source": "api",
+    "city": "KURNOOL",
+    "state": "ANDHRA PRADESH"
+  },
+  "SALEM": {
+    "lat": 11.65376,
+    "lon": 78.15538,
+    "source": "api",
+    "city": "SALEM",
+    "state": "TAMIL NADU"
+  },
+  "NORTH 24 PARAGANAS": {
+    "failed": true,
+    "city": "NORTH 24 PARAGANAS",
+    "state": "WEST BENGAL"
+  },
+  "SATARA": {
+    "lat": 17.68589,
+    "lon": 73.99333,
+    "source": "api",
+    "city": "SATARA",
+    "state": "MAHARASHTRA"
+  },
+  "KAKKANAD": {
+    "lat": 10.01636,
+    "lon": 76.34168,
+    "source": "api",
+    "city": "KAKKANAD",
+    "state": "KERALA"
+  },
+  "KARAIKAL": {
+    "lat": 10.91667,
+    "lon": 79.83333,
+    "source": "api",
+    "city": "KARAIKAL",
+    "state": "PUDUCHERRY"
+  },
+  "KARAD": {
+    "lat": 17.28937,
+    "lon": 74.18183,
+    "source": "api",
+    "city": "KARAD",
+    "state": "MAHARASHTRA"
+  },
+  "GWALIOR": {
+    "lat": 26.22983,
+    "lon": 78.17337,
+    "source": "api",
+    "city": "GWALIOR",
+    "state": "MADHYA PRADESH"
+  },
+  "HOWRAH": {
+    "lat": 22.57688,
+    "lon": 88.31857,
+    "source": "api",
+    "city": "HOWRAH",
+    "state": "WEST BENGAL"
+  },
+  "SEMMIPALAYAM": {
+    "lat": 11.00908,
+    "lon": 77.236744,
+    "source": "api",
+    "city": "SEMMIPALAYAM",
+    "state": "TAMIL NADU"
+  },
+  "COCHIN": {
+    "lat": 10.15556,
+    "lon": 76.39139,
+    "source": "api",
+    "city": "COCHIN",
+    "state": "KERALA"
+  },
+  "AMBARNATH": {
+    "lat": 19.2,
+    "lon": 73.16667,
+    "source": "api",
+    "city": "AMBARNATH",
+    "state": "MAHARASHTRA"
+  },
+  "TIRUCHENGODE": {
+    "lat": 11.38016,
+    "lon": 77.89444,
+    "source": "api",
+    "city": "TIRUCHENGODE",
+    "state": "TAMIL NADU"
+  },
+  "PALITANA": {
+    "lat": 21.52519,
+    "lon": 71.82309,
+    "source": "api",
+    "city": "PALITANA",
+    "state": "GUJARAT"
+  }
+}
