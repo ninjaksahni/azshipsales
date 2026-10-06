@@ -4,62 +4,21 @@ import json
 from pathlib import Path
 from typing import Any
 
-from src.github_store import GitHubStoreError, download_bytes, upload_bytes
-from src.store_cache import store_to_json_bytes
+from src.github_store import GitHubStoreError, download_bytes
+from src.remote_json import (
+    get_github_store_config,
+    pull_json_file,
+    push_json_dict,
+    push_json_file,
+    _set_sync_error,
+)
 
-_LAST_SYNC_ERROR: str | None = None
-
-
-def last_sync_error() -> str | None:
-    return _LAST_SYNC_ERROR
-
-
-def _set_sync_error(message: str | None) -> None:
-    global _LAST_SYNC_ERROR
-    _LAST_SYNC_ERROR = message
-
-
-def is_streamlit_cloud() -> bool:
-    import os
-
-    return bool(
-        os.environ.get("STREAMLIT_SHARING")
-        or os.environ.get("STREAMLIT_CLOUD")
-        or os.environ.get("USER") == "appuser"
-    )
-
-
-def get_github_store_config() -> dict[str, str] | None:
-    try:
-        import streamlit as st
-
-        section = st.secrets.get("github_store")
-    except Exception:
-        return None
-    if not section:
-        return None
-    token = str(section.get("token", "")).strip()
-    owner = str(section.get("owner", "")).strip()
-    repo = str(section.get("repo", "")).strip()
-    if not token or not owner or not repo:
-        return None
-    geocode_path = str(section.get("geocode_path", "geocode_cache.json")).strip()
-    return {
-        "token": token,
-        "owner": owner,
-        "repo": repo,
-        "branch": str(section.get("branch", "appdata")).strip() or "appdata",
-        "path": str(section.get("path", "aggregates.json")).strip() or "aggregates.json",
-        "geocode_path": geocode_path or "geocode_cache.json",
-    }
-
-
-def _cfg_at_path(cfg: dict[str, str], path: str) -> dict[str, str]:
-    return {**cfg, "path": path}
-
-
-def remote_store_enabled() -> bool:
-    return get_github_store_config() is not None
+# Re-export for app sidebar
+from src.remote_json import (  # noqa: F401
+    is_streamlit_cloud,
+    last_sync_error,
+    remote_store_enabled,
+)
 
 
 def _write_bytes(path: Path, payload: bytes) -> None:
@@ -87,7 +46,7 @@ def hydrate_local_store(path: Path) -> bool:
 
     if remote_hit is None:
         if local.get("skus"):
-            push_store_snapshot(local, path)
+            push_store_snapshot(local)
         _set_sync_error(None)
         return False
 
@@ -109,7 +68,7 @@ def hydrate_local_store(path: Path) -> bool:
     local_ts = local.get("last_updated") or ""
     remote_ts = remote.get("last_updated") or ""
     if local_ts > remote_ts:
-        push_store_snapshot(local, path)
+        push_store_snapshot(local)
         _set_sync_error(None)
         return True
 
@@ -118,19 +77,17 @@ def hydrate_local_store(path: Path) -> bool:
     return True
 
 
-def push_store_snapshot(store: dict[str, Any], path: Path | None = None) -> None:
+def push_store_snapshot(store: dict[str, Any]) -> None:
+    from src.store_cache import store_to_json_bytes
+
     cfg = get_github_store_config()
     if not cfg:
         return
-
-    payload = store_to_json_bytes(store)
-    try:
-        remote_hit = download_bytes(cfg)
-        sha = remote_hit[1] if remote_hit else None
-        upload_bytes(cfg, payload, sha=sha, message="Update shipment aggregates")
-        _set_sync_error(None)
-    except GitHubStoreError as exc:
-        _set_sync_error(str(exc))
+    push_json_file(
+        cfg["path"],
+        store_to_json_bytes(store),
+        message="Update shipment aggregates",
+    )
 
 
 def _merge_geocode_dicts(remote: dict[str, Any], local: dict[str, Any]) -> dict[str, Any]:
@@ -153,14 +110,7 @@ def hydrate_geocode_cache(path: Path) -> bool:
     if not cfg:
         return False
 
-    remote_path = cfg["geocode_path"]
-    remote_cfg = _cfg_at_path(cfg, remote_path)
-
-    try:
-        remote_hit = download_bytes(remote_cfg)
-    except GitHubStoreError as exc:
-        _set_sync_error(str(exc))
-        return False
+    remote_hit = pull_json_file(cfg["geocode_path"])
 
     from src.geocode import load_geocode_cache
 
@@ -168,7 +118,7 @@ def hydrate_geocode_cache(path: Path) -> bool:
 
     if remote_hit is None:
         if local:
-            push_geocode_snapshot(local, path)
+            push_geocode_snapshot(local, cfg["geocode_path"])
         return bool(local)
 
     remote_bytes, _sha = remote_hit
@@ -186,25 +136,17 @@ def hydrate_geocode_cache(path: Path) -> bool:
         _write_geocode_file(path, merged)
         return True
     if merged != remote:
-        push_geocode_snapshot(merged, path)
+        push_geocode_snapshot(merged, cfg["geocode_path"])
         return True
     return False
 
 
-def push_geocode_snapshot(cache: dict[str, Any], path: Path | None = None) -> None:
+def push_geocode_snapshot(cache: dict[str, Any], geocode_path: str | None = None) -> None:
     cfg = get_github_store_config()
     if not cfg:
         return
-
-    remote_cfg = _cfg_at_path(cfg, cfg["geocode_path"])
-    payload = json.dumps(cache, indent=2, ensure_ascii=False).encode("utf-8")
-    try:
-        remote_hit = download_bytes(remote_cfg)
-        sha = remote_hit[1] if remote_hit else None
-        upload_bytes(remote_cfg, payload, sha=sha, message="Update geocode cache")
-        _set_sync_error(None)
-    except GitHubStoreError as exc:
-        _set_sync_error(str(exc))
+    path = geocode_path or cfg["geocode_path"]
+    push_json_dict(path, cache, message="Update geocode cache")
 
 
 def hydrate_all_app_data(aggregates_path: Path, geocode_path: Path) -> bool:

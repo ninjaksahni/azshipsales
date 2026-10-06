@@ -6,12 +6,12 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
-from pathlib import Path
 from typing import Any, Callable
 
 from src.city_coords import CITY_COORDINATES, normalize_city_name
+from src.paths import GEOCODE_CACHE_PATH
 
-CACHE_PATH = Path(__file__).resolve().parent.parent / "data" / "geocode_cache.json"
+CACHE_PATH = GEOCODE_CACHE_PATH
 USER_AGENT = "azshipsales/1.0 (fulfillment map; contact: local)"
 OPEN_METEO_URL = "https://geocoding-api.open-meteo.com/v1/search"
 NOMINATIM_URL = "https://nominatim.openstreetmap.org/search"
@@ -34,9 +34,11 @@ def save_geocode_cache(cache: dict[str, Any], *, sync_remote: bool = True) -> No
         json.dump(cache, f, indent=2, ensure_ascii=False)
         f.write("\n")
     if sync_remote:
-        from src.store_sync import push_geocode_snapshot
+        from src.remote_json import get_github_store_config, push_json_dict
 
-        push_geocode_snapshot(cache, CACHE_PATH)
+        cfg = get_github_store_config()
+        if cfg:
+            push_json_dict(cfg["geocode_path"], cache, message="Update geocode cache")
 
 
 def _static_coords(city: str) -> tuple[float, float] | None:

@@ -41,7 +41,7 @@ def save_store(store: dict[str, Any], path: Path = DEFAULT_DATA_PATH) -> None:
 
     from src.store_sync import push_store_snapshot
 
-    push_store_snapshot(store, path)
+    push_store_snapshot(store)
 
 
 def ingest_rows(

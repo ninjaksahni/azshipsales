@@ -11,7 +11,7 @@ from src.constants import (
 from src.coverage import coverage_calendar_html, coverage_summary_text
 from src.store import DEFAULT_DATA_PATH, reset_store
 from src.store_cache import load_store_snapshot, store_mtime_ns
-from src.geocode import CACHE_PATH as GEOCODE_CACHE_PATH
+from src.paths import GEOCODE_CACHE_PATH
 from src.store_sync import (
     hydrate_all_app_data,
     is_streamlit_cloud,
