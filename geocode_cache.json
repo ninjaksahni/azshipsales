@@ -2070,5 +2070,293 @@
     "source": "api",
     "city": "PRAYAGRAJ",
     "state": "UTTAR PRADESH"
+  },
+  "KIWALE RAVET PIMPRI CHINCHWAD": {
+    "lat": 18.660384,
+    "lon": 73.7315672,
+    "source": "api",
+    "city": "KIWALE, RAVET, PIMPRI CHINCHWAD",
+    "state": "MAHARASHTRA"
+  },
+  "BADNERA": {
+    "lat": 20.8648,
+    "lon": 77.73521,
+    "source": "api",
+    "city": "BADNERA",
+    "state": "MAHARASHTRA"
+  },
+  "NALLASOPARA": {
+    "lat": 19.4188363,
+    "lon": 72.8256898,
+    "source": "api",
+    "city": "NALLASOPARA",
+    "state": "MAHARASHTRA"
+  },
+  "GAUTAM BUDH NAGAR": {
+    "lat": 28.4492122,
+    "lon": 77.5281018,
+    "source": "api",
+    "city": "GAUTAM BUDH NAGAR",
+    "state": "UTTAR PRADESH"
+  },
+  "LOHARDAGA": {
+    "lat": 23.43305,
+    "lon": 84.67992,
+    "source": "api",
+    "city": "LOHARDAGA",
+    "state": "JHARKHAND"
+  },
+  "AMLA": {
+    "lat": 21.92485,
+    "lon": 78.12786,
+    "source": "api",
+    "city": "AMLA",
+    "state": "MADHYA PRADESH"
+  },
+  "GREATER NOIDA WEST": {
+    "lat": 28.6093855,
+    "lon": 77.4377276,
+    "source": "api",
+    "city": "GREATER NOIDA WEST",
+    "state": "UTTAR PRADESH"
+  },
+  "PURNIA": {
+    "lat": 25.77895,
+    "lon": 87.47422,
+    "source": "api",
+    "city": "PURNIA",
+    "state": "BIHAR"
+  },
+  "SERAULIM": {
+    "lat": 15.2956519,
+    "lon": 73.9367866,
+    "source": "api",
+    "city": "SERAULIM",
+    "state": "GOA"
+  },
+  "SAHARANPUR": {
+    "lat": 29.9679,
+    "lon": 77.54522,
+    "source": "api",
+    "city": "SAHARANPUR",
+    "state": "UTTAR PRADESH"
+  },
+  "DAMMAIGUDA HYDERABAD": {
+    "lat": 17.4992875,
+    "lon": 78.5837185,
+    "source": "api",
+    "city": "DAMMAIGUDA, HYDERABAD",
+    "state": "TELANGANA"
+  },
+  "FATEHPUR DISTRICT": {
+    "lat": 25.8348023,
+    "lon": 80.9154547,
+    "source": "api",
+    "city": "FATEHPUR DISTRICT",
+    "state": "UTTAR PRADESH"
+  },
+  "MYSORE": {
+    "lat": 12.3072,
+    "lon": 76.6497,
+    "source": "api",
+    "city": "MYSORE",
+    "state": "KARNATAKA"
+  },
+  "RAMANATHPUR": {
+    "lat": 12.6106,
+    "lon": 76.08717,
+    "source": "api",
+    "city": "RAMANATHPUR",
+    "state": "WEST BENGAL"
+  },
+  "TOWN PAKRIBARAWAN DISTRICT NAWADA": {
+    "lat": 24.9541568,
+    "lon": 85.7382059,
+    "source": "api",
+    "city": "TOWN PAKRIBARAWAN DISTRICT NAWADA",
+    "state": "BIHAR"
+  },
+  "DENKANIKOTTAI": {
+    "lat": 12.5301,
+    "lon": 77.78887,
+    "source": "api",
+    "city": "DENKANIKOTTAI",
+    "state": "TAMIL NADU"
+  },
+  "PUSAD": {
+    "lat": 19.91274,
+    "lon": 77.57838,
+    "source": "api",
+    "city": "PUSAD",
+    "state": "MAHARASHTRA"
+  },
+  "SHOLINGUR": {
+    "failed": true,
+    "city": "SHOLINGUR",
+    "state": "TAMIL NADU"
+  },
+  "SUMERPUR": {
+    "lat": 25.1543,
+    "lon": 73.08157,
+    "source": "api",
+    "city": "SUMERPUR",
+    "state": "RAJASTHAN"
+  },
+  "PARAMAKUDI": {
+    "lat": 9.4867151,
+    "lon": 78.6722718,
+    "source": "api",
+    "city": "PARAMAKUDI",
+    "state": "TAMIL NADU"
+  },
+  "KARUR": {
+    "lat": 10.95771,
+    "lon": 78.08095,
+    "source": "api",
+    "city": "KARUR",
+    "state": "TAMIL NADU"
+  },
+  "AKBARPUR NEAR KANPUR": {
+    "failed": true,
+    "city": "AKBARPUR NEAR KANPUR",
+    "state": "UTTAR PRADESH"
+  },
+  "BERHAMPORE": {
+    "lat": 24.1044927,
+    "lon": 88.2510635,
+    "source": "api",
+    "city": "BERHAMPORE",
+    "state": "WEST BENGAL"
+  },
+  "NEYVELI": {
+    "lat": 11.60877,
+    "lon": 79.4994,
+    "source": "api",
+    "city": "NEYVELI",
+    "state": "TAMIL NADU"
+  },
+  "SEONI": {
+    "lat": 22.08503,
+    "lon": 79.55037,
+    "source": "api",
+    "city": "SEONI",
+    "state": "MADHYA PRADESH"
+  },
+  "MOGA": {
+    "lat": 30.81383,
+    "lon": 75.16878,
+    "source": "api",
+    "city": "MOGA",
+    "state": "PUNJAB"
+  },
+  "LUDHIANA": {
+    "lat": 30.91204,
+    "lon": 75.85379,
+    "source": "api",
+    "city": "LUDHIANA",
+    "state": "PUNJAB"
+  },
+  "LAKHIMPUR KHERI": {
+    "lat": 28.46737,
+    "lon": 80.57794,
+    "source": "api",
+    "city": "LAKHIMPUR KHERI",
+    "state": "UTTAR PRADESH"
+  },
+  "SILIGURI": {
+    "lat": 26.71004,
+    "lon": 88.42851,
+    "source": "api",
+    "city": "SILIGURI",
+    "state": "WEST BENGAL"
+  },
+  "SHIVAMOGGA": {
+    "lat": 13.93157,
+    "lon": 75.56791,
+    "source": "api",
+    "city": "SHIVAMOGGA",
+    "state": "KARNATAKA"
+  },
+  "HINDUPUR": {
+    "lat": 13.82807,
+    "lon": 77.49143,
+    "source": "api",
+    "city": "HINDUPUR",
+    "state": "ANDHRA PRADESH"
+  },
+  "CORBETT": {
+    "lat": 29.5574752,
+    "lon": 78.842495,
+    "source": "api",
+    "city": "CORBETT",
+    "state": "UTTARAKHAND"
+  },
+  "TALIKKULAM": {
+    "lat": 10.44036,
+    "lon": 76.09483,
+    "source": "api",
+    "city": "TALIKKULAM",
+    "state": "KERALA"
+  },
+  "KOLLAM": {
+    "lat": 8.88113,
+    "lon": 76.58469,
+    "source": "api",
+    "city": "KOLLAM",
+    "state": "KERALA"
+  },
+  "BARODA": {
+    "lat": 22.29941,
+    "lon": 73.20812,
+    "source": "api",
+    "city": "BARODA",
+    "state": "GUJARAT"
+  },
+  "DEWAS": {
+    "lat": 22.96585,
+    "lon": 76.05526,
+    "source": "api",
+    "city": "DEWAS",
+    "state": "MADHYA PRADESH"
+  },
+  "KANJIRAPPALLY": {
+    "lat": 9.5583077,
+    "lon": 76.791361,
+    "source": "api",
+    "city": "KANJIRAPPALLY",
+    "state": "KERALA"
+  },
+  "PERINTHALAMANNA": {
+    "failed": true,
+    "city": "PERINTHALAMANNA",
+    "state": "KERALA"
+  },
+  "SHILLONG": {
+    "lat": 25.56892,
+    "lon": 91.88313,
+    "source": "api",
+    "city": "SHILLONG",
+    "state": "MEGHALAYA"
+  },
+  "MULBAGAL": {
+    "lat": 13.16352,
+    "lon": 78.39346,
+    "source": "api",
+    "city": "MULBAGAL",
+    "state": "KARNATAKA"
+  },
+  "KUDASAN GANDHINAGAR": {
+    "lat": 23.1704419,
+    "lon": 72.6234269,
+    "source": "api",
+    "city": "KUDASAN, GANDHINAGAR",
+    "state": "GUJARAT"
+  },
+  "NALASOPARAW": {
+    "lat": 19.4174424,
+    "lon": 72.8175975,
+    "source": "api",
+    "city": "NALASOPARA(W)",
+    "state": "MAHARASHTRA"
   }
 }
